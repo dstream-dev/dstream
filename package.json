@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^1.9.4"
+  },
+  "packageManager": "pnpm@7.15.0",
+  "name": "as"
+}
