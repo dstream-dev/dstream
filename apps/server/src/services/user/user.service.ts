@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Organization, User } from "src/entities";
+import { User } from "src/entities";
 import { createID } from "src/utils";
+import { CreateUserDTO } from "src/dtos";
 
 @Injectable()
 export class UserService {
@@ -11,8 +12,13 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(user: User): Promise<User> {
+  async create(user: CreateUserDTO): Promise<User> {
     try {
+      const oldUser = await this.findOneByEmail(user.email);
+      if (oldUser) {
+        throw new HttpException("User already exists.", HttpStatus.FORBIDDEN);
+      }
+
       return this.userRepository.save({ ...user, id: createID("user") });
     } catch (error) {
       throw new HttpException(
@@ -26,12 +32,6 @@ export class UserService {
     try {
       return this.userRepository
         .createQueryBuilder("user")
-        .innerJoinAndMapOne(
-          "user.organization",
-          Organization,
-          "organization",
-          "organization.id = user.organization_id",
-        )
         .where("user.email = :email", { email })
         .getOne();
     } catch (error) {
@@ -45,20 +45,6 @@ export class UserService {
   async findOneById(id: string): Promise<User | null> {
     try {
       return this.userRepository.findOne({ where: { id } });
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async findAllByOrganizationId(organization_id: string): Promise<User[]> {
-    try {
-      return this.userRepository
-        .createQueryBuilder()
-        .where("organization_id = :organization_id", { organization_id })
-        .getMany();
     } catch (error) {
       throw new HttpException(
         error.message,

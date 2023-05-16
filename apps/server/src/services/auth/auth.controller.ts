@@ -1,14 +1,22 @@
-import { Controller, HttpException, HttpStatus, Post } from "@nestjs/common";
+import {
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthService } from "./auth.service";
+import { AuthUser, IAuthUserDecorator, UserAuthGuard } from "src/utils";
 
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(UserAuthGuard)
   @Post("login")
-  async login() {
+  async login(@AuthUser() user: IAuthUserDecorator) {
     try {
-      return "login";
+      return await this.authService.login(user.email);
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -17,10 +25,15 @@ export class AuthController {
     }
   }
 
+  @UseGuards(UserAuthGuard)
   @Post("register")
-  async register() {
+  async register(@AuthUser() user: IAuthUserDecorator) {
     try {
-      return "register";
+      return await this.authService.register({
+        email: user.email,
+        last_name: user.last_name,
+        first_name: user.first_name,
+      });
     } catch (err) {
       throw new HttpException(
         err.message,

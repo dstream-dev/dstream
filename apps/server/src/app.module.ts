@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { Organization, User } from "./entities";
+import { Organization, User, UserOrganization } from "./entities";
+import { JwtStrategy } from "./utils";
+import { UserModule, AuthModule, OrganizationModule } from "./services";
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { Organization, User } from "./entities";
         username: configService.get("DB_USERNAME"),
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_DATABASE"),
-        entities: [User, Organization],
+        entities: [User, Organization, UserOrganization],
         synchronize: true,
         autoLoadEntities: true,
         // ssl: {
@@ -26,8 +28,11 @@ import { Organization, User } from "./entities";
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
+    UserModule,
+    OrganizationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}
