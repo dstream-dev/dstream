@@ -13,20 +13,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(UserAuthGuard)
-  @Post("login")
-  async login(@AuthUser() user: IAuthUserDecorator) {
-    try {
-      return await this.authService.login(user.email);
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @UseGuards(UserAuthGuard)
-  @Post("register")
+  @Post()
   async register(@AuthUser() user: IAuthUserDecorator) {
     try {
       return await this.authService.register({

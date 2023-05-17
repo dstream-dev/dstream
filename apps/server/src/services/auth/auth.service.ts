@@ -8,20 +8,9 @@ export class AuthService {
 
   async register(userData: CreateUserDTO) {
     try {
-      return await this.userService.create(userData);
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async login(user_email: string) {
-    try {
-      const user = await this.userService.findOneByEmail(user_email);
+      const user = await this.userService.findOneByEmail(userData.email);
       if (!user) {
-        throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+        return await this.userService.create(userData);
       }
 
       return user;
