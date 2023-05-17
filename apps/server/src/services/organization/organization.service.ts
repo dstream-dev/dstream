@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
-  AssignOrginazationDTO,
   CreateOrganizationDTO,
+  UpdateOrganizationDTO,
 } from "src/dtos/organization.dto";
 import { Organization, UserOrganization, UserRole } from "src/entities";
 import { createApiKey, createID } from "src/utils";
@@ -85,21 +85,53 @@ export class OrganizationService {
     }
   }
 
-  async assignUser(
-    { user_email, role }: AssignOrginazationDTO,
-    organization_id: string,
-  ) {
+  async update({ data, id }: { data: UpdateOrganizationDTO; id: string }) {
+    try {
+      const existsOrg = await this.findById(id);
+      if (!existsOrg) {
+        throw new HttpException(
+          "Organization not found.",
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.organizationRepo.update({ id: existsOrg.id }, { ...data });
+
+      return {
+        message: "Orginazation updated successfully",
+        status: HttpStatus.OK,
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async assignUser({
+    user_email,
+    organization_id,
+    role,
+  }: {
+    user_email: string;
+    organization_id: string;
+    role: UserRole;
+  }) {
     try {
       const user = await this.userService.findOneByEmail(user_email);
       if (!user) {
         throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
 
-      const org = await this.findById(organization_id);
-      if (!org) {
+      const exists = await this.userOrganizationRepo.findOne({
+        where: { user_id: user.id, organization_id: organization_id },
+      });
+
+      if (exists) {
         throw new HttpException(
-          "Organization not found",
-          HttpStatus.BAD_REQUEST,
+          "User already exists in organization",
+          HttpStatus.FORBIDDEN,
         );
       }
 
@@ -107,10 +139,13 @@ export class OrganizationService {
         id: createID("user_org"),
         organization_id,
         user_id: user.id,
-        role: UserRole[role],
+        role: role,
       });
 
-      return org;
+      return {
+        message: "User assigned successfully.",
+        status: HttpStatus.OK,
+      };
     } catch (err) {
       throw new HttpException(
         err.message,

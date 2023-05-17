@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 
 enum UserRole {
   ADMIN = "admin",
@@ -18,7 +18,7 @@ export class CreateOrganizationDTO {
   @IsNotEmpty()
   address_line1: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   address_line2: string;
 
   @IsNotEmpty()
@@ -34,8 +34,30 @@ export class CreateOrganizationDTO {
 export class AssignOrginazationDTO {
   @IsNotEmpty()
   user_email: string;
+}
+
+export class UpdateOrganizationDTO {
+  @IsNotEmpty()
+  name: string;
 
   @IsNotEmpty()
-  @IsEnum(UserRole)
-  role: UserRole;
+  country_code: string;
+
+  @IsNotEmpty()
+  country: string;
+
+  @IsNotEmpty()
+  address_line1: string;
+
+  @IsOptional()
+  address_line2: string;
+
+  @IsNotEmpty()
+  city: string;
+
+  @IsNotEmpty()
+  state: string;
+
+  @IsNotEmpty()
+  zipcode: string;
 }

@@ -41,15 +41,4 @@ export class UserService {
       );
     }
   }
-
-  async findOneById(id: string): Promise<User | null> {
-    try {
-      return this.userRepository.findOne({ where: { id } });
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
 }
