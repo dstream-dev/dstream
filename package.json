@@ -7,7 +7,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "^1.9.6"
+    "turbo": "^1.9.7"
   },
   "packageManager": "pnpm@7.15.0",
   "name": "as"

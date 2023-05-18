@@ -3,6 +3,7 @@ import "./App.css";
 import Routing from "./Routing";
 import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import SideBar from "./components/SideBar";
 
 function App() {
   const navigate = useNavigate();
@@ -15,7 +16,10 @@ function App() {
   }, []);
   return (
     <>
-      <Routing />
+      <SideBar />
+      <div className="p-4 sm:ml-64">
+        <Routing />
+      </div>
       <Toaster position="bottom-right"></Toaster>
     </>
   );
