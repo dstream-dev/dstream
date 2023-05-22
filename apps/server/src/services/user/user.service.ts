@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User } from "src/entities";
+import { User, UserOrganization } from "src/entities";
 import { createID } from "src/utils";
 import { CreateUserDTO } from "src/dtos";
 
@@ -28,12 +28,20 @@ export class UserService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<User | null> {
+  async findOneByEmail(email: string) {
     try {
-      return this.userRepository
+      const users = await this.userRepository
         .createQueryBuilder("user")
+        .leftJoinAndMapMany(
+          "user.organizations",
+          UserOrganization,
+          "user_organization",
+          "user_organization.user_id = user.id",
+        )
         .where("user.email = :email", { email })
         .getOne();
+
+      return users;
     } catch (error) {
       throw new HttpException(
         error.message,
