@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Controller,
   HttpException,
+  Param,
 } from "@nestjs/common";
 import { OrganizationService } from "./organization.service";
 import {
@@ -81,9 +82,37 @@ export class OrganizationController {
     }
   }
 
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Get("/all")
+  async getAllOrganizations(@AuthUser() user: IAuthUserDecorator) {
+    try {
+      return await this.organizationService.getAllOrganizations(user.email);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Get("/users")
+  async getOrganizationUsers(@Headers("x-organization-id") id: string) {
+    try {
+      return await this.organizationService.getOrganizationUsers(id);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Roles(UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
-  @Put("/assign/admin")
+  @Post("/assign/admin")
   async assignAdmin(
     @Headers("x-organization-id") id: string,
     @Body() user_email: AssignOrginazationDTO,
@@ -104,7 +133,7 @@ export class OrganizationController {
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RolesGuard)
-  @Put("/assign/member")
+  @Post("/assign/member")
   async assignMember(
     @Headers("x-organization-id") id: string,
     @Body() user_email: AssignOrginazationDTO,
@@ -114,6 +143,46 @@ export class OrganizationController {
         user_email: user_email.user_email,
         organization_id: id,
         role: UserRole.MEMBER,
+      });
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/remove/admin/:id")
+  async removeAdmin(
+    @Headers("x-organization-id") id: string,
+    @Param("id") user_id: string,
+  ) {
+    try {
+      return await this.organizationService.removeUser({
+        user_id: user_id,
+        organization_id: id,
+      });
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/remove/member/:id")
+  async removeMember(
+    @Headers("x-organization-id") id: string,
+    @Param("id") user_id: string,
+  ) {
+    try {
+      return await this.organizationService.removeUser({
+        user_id: user_id,
+        organization_id: id,
       });
     } catch (err) {
       throw new HttpException(

@@ -10,13 +10,12 @@ const AxiosInstance = axios.create({ baseURL: BaseUrl });
 AxiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("access_token");
-    const acc_id =
-      JSON.parse(localStorage.getItem("account") || "{}")?.id || "";
+    const organization_id = localStorage.getItem("organization_id") || "";
     if (token) {
       config.headers.Authorization = "Bearer " + token;
     }
-    if (acc_id) {
-      config.headers["Account-Id"] = acc_id;
+    if (organization_id) {
+      config.headers["x-organization-id"] = organization_id;
     }
     config.headers["Content-Type"] = "application/json";
     config.headers.Accept = "*/*";
