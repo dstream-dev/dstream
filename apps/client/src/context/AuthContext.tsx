@@ -1,5 +1,4 @@
 import React from "react";
-import api from "../apis";
 import { toast } from "react-hot-toast";
 import { IUser } from "../interfaces";
 

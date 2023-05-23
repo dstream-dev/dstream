@@ -1,3 +1,4 @@
+import { UserRole } from "../interfaces";
 import Axios from "../utils/Axios";
 
 export async function createOrganization(data: {
@@ -19,7 +20,7 @@ export async function createOrganization(data: {
 export async function getAllOrganizations() {
   return Axios({
     method: "GET",
-    url: "/organization/users",
+    url: "/organization/all",
   });
 }
 
@@ -51,6 +52,25 @@ export async function updateOrganization({
     data: data,
     headers: {
       "x-organization-id": id,
+    },
+  });
+}
+
+export async function getOrganizationUsers() {
+  return Axios({
+    method: "GET",
+    url: "/organization/users",
+  });
+}
+
+export async function assignUser(data: { email: string; role: UserRole }) {
+  return Axios({
+    method: "POST",
+    url: `/organization/assign/${
+      data.role === UserRole.ADMIN ? "admin" : "member"
+    }`,
+    data: {
+      user_email: data.email,
     },
   });
 }

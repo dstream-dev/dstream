@@ -13,10 +13,10 @@ const settingOptions = [
     name: "User Management",
     component: <UserManagement />,
   },
-  {
-    id: 3,
-    name: "API Key",
-  },
+  // {
+  //   id: 3,
+  //   name: "API Key",
+  // },
 ];
 
 function Setting() {

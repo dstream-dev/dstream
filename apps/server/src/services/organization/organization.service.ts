@@ -174,6 +174,28 @@ export class OrganizationService {
     }
   }
 
+  async getOrganizationUsers(organization_id: string) {
+    try {
+      return await this.userOrganizationRepo
+        .createQueryBuilder("user_org")
+        .leftJoinAndMapOne(
+          "user_org.user",
+          User,
+          "user",
+          "user.id = user_org.user_id",
+        )
+        .where("user_org.organization_id = :organization_id", {
+          organization_id,
+        })
+        .getMany();
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async removeUser({
     user_id,
     organization_id,
@@ -189,6 +211,13 @@ export class OrganizationService {
       if (!exists) {
         throw new HttpException(
           "User does not exists in organization",
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      if (exists.role === UserRole.OWNER) {
+        throw new HttpException(
+          "Owner cannot be removed from organization",
           HttpStatus.FORBIDDEN,
         );
       }

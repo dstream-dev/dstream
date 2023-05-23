@@ -1,4 +1,4 @@
-import { UserRole } from ".";
+import { IUser, UserRole } from ".";
 
 export interface IOrganization {
   id: string;
@@ -20,4 +20,14 @@ export interface IUserOrganization {
   role: UserRole;
   created_at: string;
   updated_at: string;
+}
+
+export interface IOrganizationUser {
+  id: string;
+  user_id: string;
+  organization_id: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+  user: IUser;
 }
