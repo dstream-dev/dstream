@@ -21,9 +21,6 @@ export class Organization extends BaseEntity {
   api_key: string;
 
   @Column()
-  country_code: string;
-
-  @Column()
   country: string;
 
   @Column()

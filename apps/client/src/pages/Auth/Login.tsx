@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import {
@@ -11,6 +11,9 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 import { firebaseConfig } from "../../utils/FirebaseConfig";
 import { Github, Google } from "../../assets/icons";
+import api from "../../apis";
+import { IUser } from "../../interfaces";
+import { toast } from "react-hot-toast";
 
 function Login() {
   const app = initializeApp(firebaseConfig);
@@ -21,18 +24,25 @@ function Login() {
   const navigate = useNavigate();
 
   const signInWithGoogle = useMutation(
-    () => {
-      return signInWithPopup(auth, googleProvider);
+    async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const user: any = (await signInWithPopup(auth, googleProvider)).user;
+      localStorage.setItem("access_token", user.stsTokenManager.accessToken);
+      localStorage.setItem("refresh_token", user.stsTokenManager.refreshToken);
+
+      return api.auth.login();
     },
     {
-      onSuccess: async (data) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const user: any = data.user;
-        await setUpStorge({
-          access_token: user.stsTokenManager.accessToken,
-          refresh_token: user.stsTokenManager.refreshToken,
+      onSuccess: async ({ data }: { data: IUser }) => {
+        setUpStorge({
+          user: data,
         });
-        navigate("/");
+
+        if (data.organizations && data.organizations.length > 0) {
+          navigate("/");
+        } else {
+          navigate("/onboard");
+        }
       },
       onError: (error: {
         message: string;
@@ -42,24 +52,30 @@ function Login() {
           };
         };
       }) => {
-        console.log(error.response?.data?.message || error.message);
+        toast.error(error.response?.data?.message || error.message);
       },
     }
   );
 
   const signInWithGithub = useMutation(
-    () => {
-      return signInWithPopup(auth, githubProvider);
+    async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const user: any = (await signInWithPopup(auth, githubProvider)).user;
+      localStorage.setItem("access_token", user.stsTokenManager.accessToken);
+      localStorage.setItem("refresh_token", user.stsTokenManager.refreshToken);
+
+      return api.auth.login();
     },
     {
-      onSuccess: async (data) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const user: any = data.user;
-        await setUpStorge({
-          access_token: user.stsTokenManager.accessToken,
-          refresh_token: user.stsTokenManager.refreshToken,
+      onSuccess: async ({ data }: { data: IUser }) => {
+        setUpStorge({
+          user: data,
         });
-        navigate("/");
+        if (data.organizations && data.organizations.length > 0) {
+          navigate("/");
+        } else {
+          navigate("/onboard");
+        }
       },
       onError: (error: {
         message: string;
@@ -69,7 +85,7 @@ function Login() {
           };
         };
       }) => {
-        console.log(error.response?.data?.message || error.message);
+        toast.error(error.response?.data?.message || error.message);
       },
     }
   );
@@ -99,7 +115,7 @@ function Login() {
             backdropFilter: "blur(25px)",
           }}
         >
-          <p className=" text-gray-900 text-5xl font-semibold leading-[60px] w-4/5 mt-28 ml-32">
+          <p className=" text-gray-900 text-4xl font-semibold leading-[52px] w-4/5 mt-28 ml-32">
             Revolutionize your billing experience with dStream: Seamlessly
             manage metered billing and unlock new possibilities for your
             business.

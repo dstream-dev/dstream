@@ -4,7 +4,7 @@ import {
   CreateOrganizationDTO,
   UpdateOrganizationDTO,
 } from "src/dtos/organization.dto";
-import { Organization, UserOrganization, UserRole } from "src/entities";
+import { Organization, User, UserOrganization, UserRole } from "src/entities";
 import { createApiKey, createID } from "src/utils";
 import { Repository } from "typeorm";
 import { UserService } from "../user";
@@ -75,6 +75,8 @@ export class OrganizationService {
         user_id: user.id,
         role: UserRole.OWNER,
       });
+      // messageLog('activity', `#{current_user} has created organisation #{neworg.name}`);
+      // messageLog('mixpanel', event_name: 'create_organisation', 'user_name')
 
       return newOrg;
     } catch (err) {
@@ -144,6 +146,57 @@ export class OrganizationService {
 
       return {
         message: "User assigned successfully.",
+        status: HttpStatus.OK,
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getAllOrganizations(user_email: string) {
+    try {
+      const user = await this.userService.findOneByEmail(user_email);
+      if (!user) {
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
+      }
+
+      return await this.userOrganizationRepo.find({
+        where: { user_id: user.id },
+      });
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async removeUser({
+    user_id,
+    organization_id,
+  }: {
+    user_id: string;
+    organization_id: string;
+  }) {
+    try {
+      const exists = await this.userOrganizationRepo.findOne({
+        where: { user_id: user_id, organization_id: organization_id },
+      });
+
+      if (!exists) {
+        throw new HttpException(
+          "User does not exists in organization",
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      await this.userOrganizationRepo.delete({ id: exists.id });
+
+      return {
+        message: "User removed successfully.",
         status: HttpStatus.OK,
       };
     } catch (err) {

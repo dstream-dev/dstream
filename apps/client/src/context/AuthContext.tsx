@@ -1,17 +1,14 @@
 import React from "react";
 import api from "../apis";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { IUser } from "../interfaces";
 
 export interface IAuthContext {
   logedIn: boolean;
-  setUpStorge: ({
-    access_token,
-    refresh_token,
-  }: {
-    access_token: string;
-    refresh_token: string;
-  }) => void;
+  activeOrganization: string;
+  setLogedIn: (value: boolean) => void;
+  setActiveOrganization: (value: string) => void;
+  setUpStorge: ({ user }: { user: IUser }) => void;
 }
 
 export const AuthContext = React.createContext<IAuthContext>(
@@ -22,21 +19,18 @@ export const useAuth = () => React.useContext(AuthContext);
 
 const useProviderAuth = () => {
   const [logedIn, setLogedIn] = React.useState(false);
+  const [activeOrganization, setActiveOrganization] =
+    React.useState<string>("");
 
-  async function setUpStorge({
-    access_token,
-    refresh_token,
-  }: {
-    access_token: string;
-    refresh_token: string;
-  }) {
+  async function setUpStorge({ user }: { user: IUser }) {
     try {
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("refresh_token", refresh_token);
-      const res = await api.auth.login();
-      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem(
+        "organization_id",
+        user.organizations[0].organization_id
+      );
+      setActiveOrganization(user.organizations[0].organization_id);
       setLogedIn(true);
-      console.log("jjj");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.response.data.message || err?.message);
@@ -45,7 +39,10 @@ const useProviderAuth = () => {
 
   return {
     logedIn,
+    activeOrganization,
     setUpStorge,
+    setLogedIn,
+    setActiveOrganization,
   };
 };
 

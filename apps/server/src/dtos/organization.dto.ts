@@ -1,16 +1,8 @@
-import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
-
-enum UserRole {
-  ADMIN = "admin",
-  MEMBER = "member",
-}
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateOrganizationDTO {
   @IsNotEmpty()
   name: string;
-
-  @IsNotEmpty()
-  country_code: string;
 
   @IsNotEmpty()
   country: string;
@@ -39,9 +31,6 @@ export class AssignOrginazationDTO {
 export class UpdateOrganizationDTO {
   @IsNotEmpty()
   name: string;
-
-  @IsNotEmpty()
-  country_code: string;
 
   @IsNotEmpty()
   country: string;

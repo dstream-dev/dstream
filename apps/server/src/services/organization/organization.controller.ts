@@ -81,6 +81,20 @@ export class OrganizationController {
     }
   }
 
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Get("/users")
+  async getAllOrganizations(@AuthUser() user: IAuthUserDecorator) {
+    try {
+      return await this.organizationService.getAllOrganizations(user.email);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Roles(UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
   @Put("/assign/admin")

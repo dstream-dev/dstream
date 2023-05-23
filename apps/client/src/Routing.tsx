@@ -2,11 +2,16 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import Setting from "./pages/Settings/Setting";
+import CreateOrganization from "./pages/Auth/CreateOrganization";
 
 const Routing = () => (
   <Routes>
     <Route path="/login" element={<Login />} />
+    <Route path="/onboard" element={<CreateOrganization />} />
     <Route path="/" element={<Dashboard />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/settings" element={<Setting />} />
   </Routes>
 );
 

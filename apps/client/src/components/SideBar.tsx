@@ -1,10 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useOutsideClick } from "../utils/outSideClickHook";
 import Logo from "../assets/Logo";
+import { AuthContext } from "../context/AuthContext";
 
 function SideBar() {
+  const navigate = useNavigate();
   const sideBarRef = React.useRef(null);
+  const { setLogedIn } = React.useContext(AuthContext);
   const [sideBarOpen, setSideBarOpen] = React.useState<boolean>(false);
   const [bigScreen, setBigScreen] = React.useState<boolean>(false);
   useOutsideClick(sideBarRef, () => setSideBarOpen(false));
@@ -111,18 +114,24 @@ function SideBar() {
 
           <div className="mt-auto w-full">
             <button
+              onClick={() => {
+                navigate("/settings");
+              }}
               type="button"
               className="flex w-full items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100 "
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                className="w-6 h-6 text-gray-500 transition duration-75  group-hover:text-gray-900 "
-              >
-                <path d="M10.95 15.84h-11V.17h11v3.88h-1V1.17h-9v13.67h9v-2.83h1v3.83z" />
-                <path d="M5 8h6v1H5zM11 5.96l4.4 2.54-4.4 2.54V5.96z" />
-              </svg>
-              <span className="ml-3">LogOut</span>
+              <span className="ml-3 font-semibold">Settings</span>
+            </button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                setLogedIn(false);
+                navigate("/login");
+              }}
+              type="button"
+              className="flex w-full items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100 "
+            >
+              <span className="ml-3 font-semibold">LogOut</span>
             </button>
           </div>
         </div>
