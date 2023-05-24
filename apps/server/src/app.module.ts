@@ -3,9 +3,14 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { Organization, User, UserOrganization } from "./entities";
+import { Metric, Organization, User, UserOrganization } from "./entities";
 import { JwtStrategy } from "./utils";
-import { UserModule, AuthModule, OrganizationModule } from "./services";
+import {
+  UserModule,
+  AuthModule,
+  OrganizationModule,
+  MetricModule,
+} from "./services";
 
 @Module({
   imports: [
@@ -19,7 +24,7 @@ import { UserModule, AuthModule, OrganizationModule } from "./services";
         username: configService.get("DB_USERNAME"),
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_DATABASE"),
-        entities: [User, Organization, UserOrganization],
+        entities: [User, Organization, UserOrganization, Metric],
         synchronize: true,
         autoLoadEntities: true,
         // ssl: {
@@ -30,6 +35,7 @@ import { UserModule, AuthModule, OrganizationModule } from "./services";
     }),
     AuthModule,
     UserModule,
+    MetricModule,
     OrganizationModule,
   ],
   controllers: [AppController],

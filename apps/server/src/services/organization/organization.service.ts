@@ -1,13 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  CreateOrganizationDTO,
-  UpdateOrganizationDTO,
-} from "src/dtos/organization.dto";
+import { CreateOrganizationDTO, UpdateOrganizationDTO } from "src/dtos";
 import { Organization, User, UserOrganization, UserRole } from "src/entities";
 import { createApiKey, createID } from "src/utils";
-import { Repository } from "typeorm";
 import { UserService } from "../user";
+import { createEventTable, createLogTable } from "src/clickhouse";
 
 @Injectable()
 export class OrganizationService {
@@ -75,11 +73,13 @@ export class OrganizationService {
         user_id: user.id,
         role: UserRole.OWNER,
       });
-      // messageLog('activity', `#{current_user} has created organisation #{neworg.name}`);
-      // messageLog('mixpanel', event_name: 'create_organisation', 'user_name')
+
+      await createEventTable(newOrg.id);
+      await createLogTable(newOrg.id);
 
       return newOrg;
     } catch (err) {
+      console.log(err);
       throw new HttpException(
         err.message,
         err.status || HttpStatus.BAD_REQUEST,
