@@ -47,6 +47,20 @@ export class MetricController {
 
   @Roles(UserRole.ADMIN, UserRole.OWNER, UserRole.MEMBER)
   @UseGuards(UserAuthGuard, RolesGuard)
+  @Get("/all")
+  async getAllMetrics(@Headers("x-organization-id") organization_id: string) {
+    try {
+      return await this.metriceService.findAll(organization_id);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RolesGuard)
   @Get("/:id")
   async getMetrics(
     @Headers("x-organization-id") organization_id: string,
@@ -58,20 +72,6 @@ export class MetricController {
         organization_id: organization_id,
         id: id,
       });
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @Roles(UserRole.ADMIN, UserRole.OWNER, UserRole.MEMBER)
-  @UseGuards(UserAuthGuard, RolesGuard)
-  @Get("/all")
-  async getAllMetrics(@Headers("x-organization-id") organization_id: string) {
-    try {
-      return await this.metriceService.findAll(organization_id);
     } catch (err) {
       throw new HttpException(
         err.message,

@@ -10,6 +10,7 @@ import {
   AuthModule,
   OrganizationModule,
   MetricModule,
+  EventModule,
 } from "./services";
 
 @Module({
@@ -36,6 +37,7 @@ import {
     AuthModule,
     UserModule,
     MetricModule,
+    EventModule,
     OrganizationModule,
   ],
   controllers: [AppController],
