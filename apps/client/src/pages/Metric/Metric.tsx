@@ -1,12 +1,28 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import api from "../../apis";
+import Spinner from "../../components/Spinner";
 
 function Metric() {
   const navigate = useNavigate();
 
+  const { data, isLoading } = useQuery(
+    ["metrics"],
+    () => {
+      return api.metric.getMetrics();
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // const deleteMetric = async (id: string) => {
+  //   try {
+
   return (
     <div>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="font-semibold text-gray-900 text-lg">Metrics</h1>
         <button
           type="button"
@@ -28,21 +44,21 @@ function Metric() {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
-                User Name
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Email
+                Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Role
+                Created At
               </th>
               <th scope="col" className="px-6 py-3">
                 <span className="sr-only">Edit</span>
               </th>
             </tr>
           </thead>
-          <tbody>
-            {/* {isLoading ? (
+          <tbody className="w-full">
+            {isLoading ? (
               <tr>
                 <td
                   colSpan={4}
@@ -54,21 +70,31 @@ function Metric() {
               </tr>
             ) : (
               <>
-                {(data?.data || []).map((item: IOrganizationUser) => {
+                {(data?.data || []).map((item: any) => {
                   return (
                     <tr
                       key={item.id}
-                      className="bg-white border-b hover:bg-gray-50"
+                      className="bg-white border-b hover:bg-gray-50 w-full"
                     >
-                      <th
-                        scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                      >
-                        {item.user.first_name} {item.user.last_name}
+                      <th className="px-6 py-4 font-medium text-gray-900">
+                        {item.name}
                       </th>
-                      <td className="px-6 py-4">{item.user.email}</td>
-                      <td className="px-6 py-4">{item.role}</td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 truncate max-w-[250px]">
+                        {item?.description}
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Intl.DateTimeFormat("en-IN", {
+                          timeZone: "IST",
+                          dateStyle: "medium",
+                        }).format(new Date(item?.created_at))}
+                      </td>
+                      <td className="px-6 py-4 flex justify-between items-center gap-2 text-right">
+                        <button
+                          onClick={() => console.log(item.id)}
+                          className="font-medium text-gray-600 hover:underline"
+                        >
+                          Edit
+                        </button>
                         <button
                           onClick={() => console.log(item.id)}
                           className="font-medium text-gray-600 hover:underline"
@@ -80,7 +106,7 @@ function Metric() {
                   );
                 })}
               </>
-            )} */}
+            )}
           </tbody>
         </table>
       </div>
