@@ -8,6 +8,8 @@ import {
   Controller,
   HttpStatus,
   HttpException,
+  Put,
+  Delete,
 } from "@nestjs/common";
 import { MetricService } from "./metric.service";
 import {
@@ -18,7 +20,7 @@ import {
   IAuthUserDecorator,
 } from "src/utils";
 import { UserRole } from "src/entities";
-import { CreateMetricDto } from "src/dtos";
+import { CreateMetricDTO, UpdateMetricDTO } from "src/dtos";
 
 @Controller("metric")
 export class MetricController {
@@ -28,7 +30,7 @@ export class MetricController {
   @UseGuards(UserAuthGuard, RolesGuard)
   @Post()
   async create(
-    @Body() data: CreateMetricDto,
+    @Body() data: CreateMetricDTO,
     @Headers("x-organization-id") organization_id: string,
     @AuthUser() user: IAuthUserDecorator,
   ) {
@@ -69,6 +71,50 @@ export class MetricController {
   ) {
     try {
       return await this.metriceService.findByID({
+        organization_id: organization_id,
+        id: id,
+      });
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/:id")
+  async updateMetric(
+    @Headers("x-organization-id") organization_id: string,
+    @Param("id") id: string,
+    @Body() data: UpdateMetricDTO,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      return await this.metriceService.update({
+        organization_id: organization_id,
+        id: id,
+        data: data,
+      });
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Delete("/:id")
+  async deleteMetric(
+    @Headers("x-organization-id") organization_id: string,
+    @Param("id") id: string,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      return await this.metriceService.delete({
         organization_id: organization_id,
         id: id,
       });

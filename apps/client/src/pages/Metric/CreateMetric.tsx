@@ -1,11 +1,11 @@
 import React from "react";
-import { MetricAggregationType } from "../../interfaces/Metric";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import api from "../../apis";
-import { ComboBox, Item } from "../../components/ComboBox";
-import Spinner from "../../components/Spinner";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import api from "../../apis";
+import Spinner from "../../components/Spinner";
+import { ComboBox, Item } from "../../components/ComboBox";
+import { IMetric, MetricAggregationType } from "../../interfaces";
 
 const aggregate_types = [
   {
@@ -57,8 +57,14 @@ const conditions = {
   ],
 };
 
-function CreateMetric() {
-  const navigate = useNavigate();
+interface IProps {
+  setIsOpen: (value: boolean) => void;
+  metricData: IMetric | null;
+  setEditedData: (value: null) => void;
+}
+
+function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
+  const queryClient = useQueryClient();
   const [filters, setFilters] = React.useState<
     Array<{
       property: string;
@@ -66,14 +72,18 @@ function CreateMetric() {
       value: string;
       property_type: string;
     }>
-  >([
-    {
-      property: "",
-      condition: "",
-      value: "",
-      property_type: "",
-    },
-  ]);
+  >(
+    metricData
+      ? metricData.condition
+      : [
+          {
+            property: "",
+            condition: "",
+            value: "",
+            property_type: "",
+          },
+        ]
+  );
 
   const [aggregateValues, setAggreagteValues] = React.useReducer(
     (
@@ -89,8 +99,9 @@ function CreateMetric() {
       return { ...state, [newState.type]: newState.value };
     },
     {
-      aggregation_type: MetricAggregationType.COUNT,
-      aggregate_field_name: "",
+      aggregation_type:
+        metricData?.aggregation_type || MetricAggregationType.SUM,
+      aggregate_field_name: metricData?.aggregate_field_name || "",
     }
   );
   const [metricDetails, setMetricDetails] = React.useReducer(
@@ -107,8 +118,8 @@ function CreateMetric() {
       return { ...state, [newState.type]: newState.value };
     },
     {
-      name: "",
-      description: "",
+      name: metricData?.name || "",
+      description: metricData?.description || "",
     }
   );
 
@@ -150,12 +161,22 @@ function CreateMetric() {
         return Promise.reject({ message: "Please select aggregate field" });
       }
 
+      if (metricData) {
+        return api.metric.updateMetric({ id: metricData.id, data: payload });
+      }
+
       return api.metric.createMetric(payload);
     },
     {
       onSuccess: () => {
-        toast.success("Metric created successfully");
-        navigate("/metrics");
+        toast.success(
+          metricData
+            ? "Metric updated successfully"
+            : "Metric created successfully"
+        );
+        queryClient.invalidateQueries(["metrics"]);
+        setIsOpen(false);
+        setEditedData(null);
       },
       onError: (err: {
         message: string;
@@ -167,20 +188,32 @@ function CreateMetric() {
   );
 
   return (
-    <div>
+    <div className="p-4 ">
       <div className="flex justify-between items-center mb-6 border-b-2 py-4">
         <h1 className="font-semibold text-gray-900 text-lg">
           Create New Metrics
         </h1>
-        <button
-          type="button"
-          onClick={() => {
-            createMetric.mutate();
-          }}
-          className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
-        >
-          Save
-        </button>
+        <div className="flex justify-between items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpen(false);
+              setEditedData(null);
+            }}
+            className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
+          >
+            Cancle
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              createMetric.mutate();
+            }}
+            className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -228,6 +261,7 @@ function CreateMetric() {
                 <div key={index} className="flex gap-2 justify-stretch">
                   <ComboBox
                     label=" "
+                    defaultSelectedKey={item.property || ""}
                     onSelectionChange={(e) => {
                       setFilters((prv) => {
                         const val = [...prv];
@@ -256,6 +290,7 @@ function CreateMetric() {
                   </ComboBox>
                   <ComboBox
                     label=" "
+                    defaultSelectedKey={item.condition || ""}
                     onSelectionChange={(e) => {
                       setFilters((prv) => {
                         const val = [...prv];
@@ -278,6 +313,7 @@ function CreateMetric() {
                   {filters[index].property_type === "String" ? (
                     <ComboBox
                       label=" "
+                      defaultSelectedKey={item.value || ""}
                       onSelectionChange={(e) => {
                         setFilters((prv) => {
                           const val = [...prv];
@@ -302,6 +338,7 @@ function CreateMetric() {
                   ) : (
                     <input
                       type="number"
+                      value={item.value}
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block p-2"
                       placeholder="value e.g. 12"
                     />
