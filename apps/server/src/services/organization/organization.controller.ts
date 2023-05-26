@@ -22,7 +22,7 @@ import {
   AssignOrginazationDTO,
   CreateOrganizationDTO,
   UpdateOrganizationDTO,
-} from "src/dtos/organization.dto";
+} from "src/dtos";
 import { UserRole } from "src/entities";
 
 @Controller("organization")
