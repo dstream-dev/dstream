@@ -19,6 +19,8 @@ import {
   EventModule,
   CustomersModule,
 } from "./services";
+import { BullModule } from "@nestjs/bullmq";
+import { BullBoardController } from "./bullBoard.controller";
 
 @Module({
   imports: [
@@ -41,6 +43,16 @@ import {
       }),
       inject: [ConfigService],
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get("REDIS_HOST"),
+          port: +configService.get("REDIS_PORT"),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     AuthModule,
     UserModule,
     MetricModule,
@@ -48,7 +60,7 @@ import {
     OrganizationModule,
     CustomersModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, BullBoardController],
   providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

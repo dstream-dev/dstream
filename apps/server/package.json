@@ -20,7 +20,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@bull-board/api": "^5.2.0",
+    "@bull-board/express": "^5.2.0",
     "@clickhouse/client": "^0.0.16",
+    "@nestjs/bullmq": "^1.1.0",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.4.0",
@@ -28,6 +31,7 @@
     "@nestjs/platform-express": "^9.4.0",
     "@nestjs/typeorm": "^9.0.1",
     "@types/passport-jwt": "^3.0.8",
+    "bullmq": "^3.14.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",

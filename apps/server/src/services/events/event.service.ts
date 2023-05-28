@@ -1,4 +1,7 @@
+import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Queue } from "bullmq";
+import { queuePool } from "src/BullBoardQueue";
 import { clickhouseClient } from "src/clickhouse";
 import { CreateEventDTO } from "src/dtos";
 import { formatDate } from "src/utils";
@@ -6,6 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class EventService {
+  constructor(@InjectQueue("event") private readonly eventQueue: Queue) {
+    queuePool.add(this.eventQueue);
+  }
+
   async createEvent(data: CreateEventDTO) {
     try {
       await clickhouseClient.insert({
@@ -22,6 +29,35 @@ export class EventService {
         ],
         format: "JSONEachRow",
       });
+
+      return {
+        status: HttpStatus.OK,
+        message: "Event created successfully",
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async createEventJob(data: CreateEventDTO) {
+    try {
+      this.eventQueue.add(
+        "event",
+        {
+          org_id: data.org_id,
+          customer_id: data.customer_id,
+          event_name: data.event_name,
+          properties: data.properties,
+        },
+        {
+          delay: 10000,
+          removeOnComplete: true,
+          removeOnFail: 1000,
+        },
+      );
 
       return {
         status: HttpStatus.OK,

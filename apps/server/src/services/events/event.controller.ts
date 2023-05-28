@@ -21,7 +21,7 @@ export class EventController {
   @Post()
   async create(@Body() createEventDto: CreateEventDTO) {
     try {
-      return await this.eventService.createEvent(createEventDto);
+      return await this.eventService.createEventJob(createEventDto);
     } catch (err) {
       throw new HttpException(
         err.message,

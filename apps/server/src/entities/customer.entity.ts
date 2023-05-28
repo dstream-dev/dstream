@@ -53,6 +53,12 @@ export class Customer extends BaseEntity {
   @Column({ nullable: true })
   zipcode: string;
 
+  @Column({ default: 0 })
+  account_balance: number;
+
+  @Column({ default: "USD" })
+  currency: string;
+
   @CreateDateColumn()
   created_at: Date;
 

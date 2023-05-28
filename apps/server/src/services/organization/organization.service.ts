@@ -79,7 +79,6 @@ export class OrganizationService {
 
       return newOrg;
     } catch (err) {
-      console.log(err);
       throw new HttpException(
         err.message,
         err.status || HttpStatus.BAD_REQUEST,
