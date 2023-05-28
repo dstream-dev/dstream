@@ -6,7 +6,6 @@ export async function creatCustomer(data: {
   timezone: string;
   external_customer_id: string;
 }) {
-  console.log("data", data);
   return Axios({
     method: "POST",
     url: "/customer",

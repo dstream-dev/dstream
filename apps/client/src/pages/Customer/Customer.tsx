@@ -1,14 +1,12 @@
 import React from "react";
-import { toast } from "react-hot-toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../apis";
 import Spinner from "../../components/Spinner";
 import SwipeUp from "../../components/SwipeUp";
-import { ICustomer, IMetric } from "../../interfaces";
+import { ICustomer } from "../../interfaces";
 import CreateCustomer from "./CreateCustomer";
 
 function Customer() {
-  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const { data, isLoading } = useQuery(
@@ -18,24 +16,6 @@ function Customer() {
     },
     {
       refetchOnWindowFocus: false,
-    }
-  );
-
-  const deleteCustomer = useMutation(
-    (id: string) => {
-      return api.metric.deleteMetric({ id });
-    },
-    {
-      onSuccess: () => {
-        toast.success("Metric deleted successfully");
-        queryClient.invalidateQueries(["metrics"]);
-      },
-      onError: (err: {
-        message: string;
-        response: { data: { message: string } };
-      }) => {
-        toast.error(err?.response?.data?.message || err.message);
-      },
     }
   );
 

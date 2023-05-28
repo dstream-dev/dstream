@@ -405,7 +405,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
                   value: e as string,
                 });
               }}
-              placeholder="Select Property"
+              placeholder="Select Aggregation Type"
             >
               {(aggregate_types || []).map(
                 (item: { id: string; name: string }) => {
@@ -421,8 +421,13 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
               </label>
               <ComboBox
                 label=" "
-                onSelectionChange={(e) => console.log(e)}
-                placeholder="Select Property"
+                onSelectionChange={(e) => {
+                  setAggreagteValues({
+                    type: "aggregate_field_name",
+                    value: e as string,
+                  });
+                }}
+                placeholder="Select Field Name"
               >
                 {(data?.data?.properties || []).map(
                   (item: {

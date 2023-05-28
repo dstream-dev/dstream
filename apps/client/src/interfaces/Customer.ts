@@ -10,6 +10,8 @@ export interface ICustomer {
   city: string;
   state: string;
   zipcode: string;
+  account_balance: number;
+  currency: string;
   created_at: Date;
   updated_at: Date;
 }
