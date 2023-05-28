@@ -1,26 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { clickhouseClient } from "src/clickhouse";
 import { CreateEventDTO } from "src/dtos";
+import { formatDate } from "src/utils";
 import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class EventService {
-  async formatDate(data: string) {
-    const date = new Date(data);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hour = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    return `${year}-${month.toString().padStart(2, "0")}-${day
-      .toString()
-      .padStart(2, "0")} ${hour.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  }
-
   async createEvent(data: CreateEventDTO) {
     try {
       await clickhouseClient.insert({
@@ -32,7 +17,7 @@ export class EventService {
             customer_id: data.customer_id,
             event_name: data.event_name,
             properties: data.properties,
-            created_at: await this.formatDate(new Date().toISOString()),
+            created_at: await formatDate(new Date().toISOString()),
           },
         ],
         format: "JSONEachRow",
@@ -41,6 +26,26 @@ export class EventService {
       return {
         status: HttpStatus.OK,
         message: "Event created successfully",
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getEvents(org_id: string) {
+    try {
+      const events: any = await (
+        await clickhouseClient.query({
+          query: `select * from default.events_${org_id}`,
+          format: "JSONEachRow",
+        })
+      ).json();
+
+      return {
+        events,
       };
     } catch (err) {
       throw new HttpException(

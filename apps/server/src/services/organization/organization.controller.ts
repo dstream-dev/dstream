@@ -24,6 +24,7 @@ import {
   UpdateOrganizationDTO,
 } from "src/dtos";
 import { UserRole } from "src/entities";
+import { activityLog } from "src/utils/activityLog";
 
 @Controller("organization")
 export class OrganizationController {
@@ -36,10 +37,20 @@ export class OrganizationController {
     @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.create({
+      const newOrg = await this.organizationService.create({
         organization: organization,
         user_email: user.email,
       });
+
+      activityLog({
+        org_id: newOrg.id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: newOrg.id,
+        activity: "organization created",
+      });
+
+      return newOrg;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -68,12 +79,23 @@ export class OrganizationController {
   async updateOrganization(
     @Headers("x-organization-id") id: string,
     @Body() organization: UpdateOrganizationDTO,
+    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.update({
+      const update = await this.organizationService.update({
         id: id,
         data: organization,
       });
+
+      activityLog({
+        org_id: id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: id,
+        activity: "organization updated",
+      });
+
+      return update;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -116,13 +138,24 @@ export class OrganizationController {
   async assignAdmin(
     @Headers("x-organization-id") id: string,
     @Body() user_email: AssignOrginazationDTO,
+    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.assignUser({
+      const assignAdmin = await this.organizationService.assignUser({
         user_email: user_email.user_email,
         organization_id: id,
         role: UserRole.ADMIN,
       });
+
+      activityLog({
+        org_id: id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: id,
+        activity: "admin assigned",
+      });
+
+      return assignAdmin;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -137,13 +170,24 @@ export class OrganizationController {
   async assignMember(
     @Headers("x-organization-id") id: string,
     @Body() user_email: AssignOrginazationDTO,
+    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.assignUser({
+      const assignMember = await this.organizationService.assignUser({
         user_email: user_email.user_email,
         organization_id: id,
         role: UserRole.MEMBER,
       });
+
+      activityLog({
+        org_id: id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: id,
+        activity: "member assigned",
+      });
+
+      return assignMember;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -158,12 +202,23 @@ export class OrganizationController {
   async removeAdmin(
     @Headers("x-organization-id") id: string,
     @Param("id") user_id: string,
+    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.removeUser({
+      const removeAdmin = await this.organizationService.removeUser({
         user_id: user_id,
         organization_id: id,
       });
+
+      activityLog({
+        org_id: id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: user_id,
+        activity: "admin removed",
+      });
+
+      return removeAdmin;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -178,12 +233,23 @@ export class OrganizationController {
   async removeMember(
     @Headers("x-organization-id") id: string,
     @Param("id") user_id: string,
+    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.organizationService.removeUser({
+      const removeMember = await this.organizationService.removeUser({
         user_id: user_id,
         organization_id: id,
       });
+
+      activityLog({
+        org_id: id,
+        by: user.email,
+        activity_type: "organization",
+        activity_id: user_id,
+        activity: "member removed",
+      });
+
+      return removeMember;
     } catch (err) {
       throw new HttpException(
         err.message,

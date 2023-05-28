@@ -7,7 +7,7 @@ export async function createLogTable(org_id: string) {
       org_id String,
       by String,
       activity_type String,
-      activity_id String,
+      activity_id Nullable(String),
       activity String,
       created_at DateTime
     ) ENGINE = MergeTree()

@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Setting from "./pages/Settings/Setting";
 import CreateOrganization from "./pages/Auth/CreateOrganization";
 import Metric from "./pages/Metric/Metric";
+import Customer from "./pages/Customer/Customer";
 
 const Routing = () => (
   <Routes>
@@ -14,6 +15,9 @@ const Routing = () => (
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/metrics">
       <Route index element={<Metric />} />
+    </Route>
+    <Route path="/customers">
+      <Route index element={<Customer />} />
     </Route>
     <Route path="/settings" element={<Setting />} />
   </Routes>

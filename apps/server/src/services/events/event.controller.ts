@@ -46,6 +46,20 @@ export class EventController {
 
   @Roles(UserRole.ADMIN, UserRole.MEMBER, UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
+  @Get()
+  async getEvents(@Headers("x-organization-id") id: string) {
+    try {
+      return await this.eventService.getEvents(id);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.MEMBER, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
   @Get("properties/values/:property")
   async getPropertyValues(
     @Headers("x-organization-id") id: string,

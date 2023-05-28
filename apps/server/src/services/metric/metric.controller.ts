@@ -21,6 +21,7 @@ import {
 } from "src/utils";
 import { UserRole } from "src/entities";
 import { CreateMetricDTO, UpdateMetricDTO } from "src/dtos";
+import { activityLog } from "src/utils/activityLog";
 
 @Controller("metric")
 export class MetricController {
@@ -35,10 +36,20 @@ export class MetricController {
     @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.metriceService.create({
+      const newMetric = await this.metriceService.create({
         organization_id,
         data,
       });
+
+      activityLog({
+        org_id: organization_id,
+        by: user.email,
+        activity_type: "metric",
+        activity_id: newMetric.id,
+        activity: "metric created",
+      });
+
+      return newMetric;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -67,7 +78,6 @@ export class MetricController {
   async getMetrics(
     @Headers("x-organization-id") organization_id: string,
     @Param("id") id: string,
-    @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
       return await this.metriceService.findByID({
@@ -92,11 +102,21 @@ export class MetricController {
     @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.metriceService.update({
+      const updatedMetric = await this.metriceService.update({
         organization_id: organization_id,
         id: id,
         data: data,
       });
+
+      activityLog({
+        org_id: organization_id,
+        by: user.email,
+        activity_type: "metric",
+        activity_id: id,
+        activity: "metric updated",
+      });
+
+      return updatedMetric;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -114,10 +134,20 @@ export class MetricController {
     @AuthUser() user: IAuthUserDecorator,
   ) {
     try {
-      return await this.metriceService.delete({
+      const deletedMetric = await this.metriceService.delete({
         organization_id: organization_id,
         id: id,
       });
+
+      activityLog({
+        org_id: organization_id,
+        by: user.email,
+        activity_type: "metric",
+        activity_id: id,
+        activity: "metric deleted",
+      });
+
+      return deletedMetric;
     } catch (err) {
       throw new HttpException(
         err.message,

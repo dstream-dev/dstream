@@ -1,28 +1,27 @@
 import React from "react";
+import { toast } from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../apis";
 import Spinner from "../../components/Spinner";
 import SwipeUp from "../../components/SwipeUp";
-import CreateMetric from "./CreateMetric";
-import { toast } from "react-hot-toast";
-import { IMetric } from "../../interfaces";
+import { ICustomer, IMetric } from "../../interfaces";
+import CreateCustomer from "./CreateCustomer";
 
-function Metric() {
+function Customer() {
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [editedData, setEditedData] = React.useState<IMetric | null>(null);
 
   const { data, isLoading } = useQuery(
-    ["metrics"],
+    ["customers"],
     () => {
-      return api.metric.getMetrics();
+      return api.customer.getAllCustomers();
     },
     {
       refetchOnWindowFocus: false,
     }
   );
 
-  const deleteMetric = useMutation(
+  const deleteCustomer = useMutation(
     (id: string) => {
       return api.metric.deleteMetric({ id });
     },
@@ -44,7 +43,7 @@ function Metric() {
     <>
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h1 className="font-semibold text-gray-900 text-lg">Metrics</h1>
+          <h1 className="font-semibold text-gray-900 text-lg">Customers</h1>
           <button
             type="button"
             onClick={() => {
@@ -52,12 +51,8 @@ function Metric() {
             }}
             className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
           >
-            Create New Metric
+            Create New Customer
           </button>
-        </div>
-
-        <div className="flex items-center justify-center h-80 mb-4 rounded bg-gray-50 ">
-          <p className="text-2xl text-gray-400 ">+</p>
         </div>
 
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
@@ -68,13 +63,10 @@ function Metric() {
                   Name
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Description
+                  External Id
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Created At
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <span className="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
@@ -91,40 +83,24 @@ function Metric() {
                 </tr>
               ) : (
                 <>
-                  {(data?.data || []).map((item: IMetric) => {
+                  {(data?.data || []).map((item: ICustomer) => {
                     return (
                       <tr
+                        onClick={() => console.log(item)}
                         key={item.id}
-                        className="bg-white border-b hover:bg-gray-50 w-full"
+                        className="bg-white border-b hover:bg-gray-50 w-full cursor-pointer"
                       >
                         <th className="px-6 py-4 font-medium text-gray-900">
                           {item.name}
                         </th>
                         <td className="px-6 py-4 truncate max-w-[250px]">
-                          {item?.description}
+                          {item?.external_customer_id}
                         </td>
                         <td className="px-6 py-4">
                           {new Intl.DateTimeFormat("en-IN", {
                             timeZone: "IST",
                             dateStyle: "medium",
                           }).format(new Date(item?.created_at))}
-                        </td>
-                        <td className="px-6 py-4 flex justify-between items-center gap-2 text-right">
-                          <button
-                            onClick={() => {
-                              setIsOpen(true);
-                              setEditedData(item);
-                            }}
-                            className="font-medium text-gray-600 hover:underline"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => deleteMetric.mutate(item.id)}
-                            className="font-medium text-gray-600 hover:underline"
-                          >
-                            Remove
-                          </button>
                         </td>
                       </tr>
                     );
@@ -140,18 +116,13 @@ function Metric() {
           isOpen={isOpen}
           close={() => {
             setIsOpen(false);
-            setEditedData(null);
           }}
         >
-          <CreateMetric
-            setIsOpen={setIsOpen}
-            setEditedData={setEditedData}
-            metricData={editedData}
-          />
+          <CreateCustomer setIsOpen={setIsOpen} />
         </SwipeUp>
       )}
     </>
   );
 }
 
-export default Metric;
+export default Customer;

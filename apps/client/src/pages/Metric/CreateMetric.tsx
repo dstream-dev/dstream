@@ -100,7 +100,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
     },
     {
       aggregation_type:
-        metricData?.aggregation_type || MetricAggregationType.SUM,
+        metricData?.aggregation_type || MetricAggregationType.COUNT,
       aggregate_field_name: metricData?.aggregate_field_name || "",
     }
   );
@@ -339,6 +339,13 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
                     <input
                       type="number"
                       value={item.value}
+                      onChange={(e) => {
+                        setFilters((prv) => {
+                          const val = [...prv];
+                          val[index].value = e.target.value;
+                          return val;
+                        });
+                      }}
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block p-2"
                       placeholder="value e.g. 12"
                     />
@@ -391,7 +398,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
             </label>
             <ComboBox
               label=" "
-              defaultInputValue="COUNT"
+              defaultInputValue={aggregateValues.aggregation_type || ""}
               onSelectionChange={(e) => {
                 setAggreagteValues({
                   type: "aggregation_type",
