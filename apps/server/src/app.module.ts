@@ -7,6 +7,8 @@ import {
   Customer,
   Metric,
   Organization,
+  Plan,
+  PlanCharges,
   User,
   UserOrganization,
 } from "./entities";
@@ -34,7 +36,15 @@ import { BullBoardController } from "./bullBoard.controller";
         username: configService.get("DB_USERNAME"),
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_DATABASE"),
-        entities: [User, Organization, UserOrganization, Metric, Customer],
+        entities: [
+          Plan,
+          User,
+          Metric,
+          Customer,
+          PlanCharges,
+          Organization,
+          UserOrganization,
+        ],
         synchronize: true,
         autoLoadEntities: true,
         // ssl: {
