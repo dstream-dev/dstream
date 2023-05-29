@@ -1,15 +1,22 @@
 import React from "react";
 import { toast } from "react-hot-toast";
-import { ComboBox, Item } from "../../components/ComboBox";
-import { timeZonesList } from "../../utils/timeZoneList";
-import api from "../../apis";
+import { ComboBox, Item } from "../../../components/ComboBox";
+import { timeZonesList } from "../../../utils/timeZoneList";
+import api from "../../../apis";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface IProps {
   setIsOpen: (value: boolean) => void;
+  customerData?: {
+    id: string;
+    name: string;
+    email: string;
+    timezone: string;
+    external_customer_id: string;
+  };
 }
 
-function CreateCustomer({ setIsOpen }: IProps) {
+function CreateCustomer({ setIsOpen, customerData }: IProps) {
   const queryClient = useQueryClient();
   const [userDetails, setUserDetails] = React.useReducer(
     (
@@ -25,10 +32,12 @@ function CreateCustomer({ setIsOpen }: IProps) {
       }
     ) => ({ ...state, [newState.type]: newState.value }),
     {
-      name: "",
-      email: "",
-      timezone: "",
-      external_customer_id: "",
+      name: customerData ? customerData.name : "",
+      email: customerData ? customerData.email : "",
+      timezone: customerData ? customerData.timezone : "",
+      external_customer_id: customerData
+        ? customerData.external_customer_id
+        : "",
     }
   );
 
@@ -51,38 +60,64 @@ function CreateCustomer({ setIsOpen }: IProps) {
     }
   );
 
+  const customerUpdate = useMutation(
+    () => {
+      return api.customer.updateCustomer({
+        id: customerData?.id || "",
+        data: userDetails,
+      });
+    },
+    {
+      onSuccess: () => {
+        setIsOpen(false);
+        toast.success("Customer updated successfully");
+        queryClient.invalidateQueries(["customer", customerData?.id]);
+      },
+      onError: (err: {
+        message: string;
+        response: { data: { message: string } };
+      }) => {
+        toast.error(err?.response?.data?.message || err.message);
+      },
+    }
+  );
+
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center mb-6 border-b-2 py-4">
         <h1 className="font-semibold text-gray-900 text-lg">
           Customer details
         </h1>
-        <div className="flex justify-between items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-            className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
-          >
-            Cancle
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              customerCreate.mutate();
-            }}
-            className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
-          >
-            Save
-          </button>
-        </div>
+        {!customerData && (
+          <div className="flex justify-between items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
+            >
+              Cancle
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                customerCreate.mutate();
+              }}
+              className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
+            >
+              Save
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-center items-start gap-8">
         <div
           key="details"
-          className="flex justify-between items-center gap-5 flex-col mb-6 w-full max-w-md"
+          className={`flex justify-between items-center gap-5 flex-col mb-6 w-full ${
+            !customerData && "max-w-md"
+          }`}
         >
           <div className="flex justify-between items-center w-full">
             <div>
@@ -154,6 +189,7 @@ function CreateCustomer({ setIsOpen }: IProps) {
               </label>
               <ComboBox
                 label=" "
+                selectedKey={userDetails.timezone}
                 onSelectionChange={(e) => {
                   setUserDetails({
                     type: "timezone",
@@ -169,39 +205,61 @@ function CreateCustomer({ setIsOpen }: IProps) {
             </div>
           </div>
         </div>
-        <div className="w-64 flex-none">
-          <div className="bg-gray-100 rounded-lg p-4">
-            <div className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                aria-hidden="true"
-                className="h-5 w-5 shrink-0 text-accent-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                ></path>
-              </svg>
-              <span className="text-xs text-gray-900 ml-1 uppercase font-bold">
-                Note
-              </span>
-            </div>
-            <div className="mt-4">
-              <span className="text-sm text-gray-600">
-                In dStream, customers are assigned unique IDs. You can also
-                specify your own application&apos;s identifier as an External
-                Customer ID, which will be used as an alias to make reporting
-                usage events easier.
-              </span>
+        {!customerData && (
+          <div className="w-64 flex-none">
+            <div className="bg-gray-100 rounded-lg p-4">
+              <div className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 text-accent-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+                <span className="text-xs text-gray-900 ml-1 uppercase font-bold">
+                  Note
+                </span>
+              </div>
+              <div className="mt-4">
+                <span className="text-sm text-gray-600">
+                  In dStream, customers are assigned unique IDs. You can also
+                  specify your own application&apos;s identifier as an External
+                  Customer ID, which will be used as an alias to make reporting
+                  usage events easier.
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
+      {customerData && (
+        <div className="flex items-center py-6 space-x-2 border-t border-gray-200 rounded-b">
+          <button
+            onClick={() => {
+              customerUpdate.mutate();
+            }}
+            type="button"
+            className="text-white bg-gray-900 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
+          >
+            Update Balance
+          </button>
+          <button
+            onClick={() => setIsOpen(false)}
+            type="button"
+            className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-900 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
+          >
+            Cancle
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,9 +4,11 @@ import api from "../../apis";
 import Spinner from "../../components/Spinner";
 import SwipeUp from "../../components/SwipeUp";
 import { ICustomer } from "../../interfaces";
-import CreateCustomer from "./CreateCustomer";
+import CreateCustomer from "./parts/CreateCustomer";
+import { useNavigate } from "react-router-dom";
 
 function Customer() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const { data, isLoading } = useQuery(
@@ -66,7 +68,7 @@ function Customer() {
                   {(data?.data || []).map((item: ICustomer) => {
                     return (
                       <tr
-                        onClick={() => console.log(item)}
+                        onClick={() => navigate(`/customers/${item.id}`)}
                         key={item.id}
                         className="bg-white border-b hover:bg-gray-50 w-full cursor-pointer"
                       >

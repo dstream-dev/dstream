@@ -13,9 +13,52 @@ export async function creatCustomer(data: {
   });
 }
 
+export async function updateCustomer({
+  id,
+  data,
+}: {
+  id: string;
+  data: {
+    name: string;
+    email: string;
+    timezone: string;
+    external_customer_id: string;
+  };
+}) {
+  return Axios({
+    method: "PUT",
+    url: `/customer/${id}`,
+    data,
+  });
+}
+
 export async function getAllCustomers() {
   return Axios({
     method: "GET",
     url: "/customer/all",
+  });
+}
+
+export async function getCustomerById(id: string) {
+  return Axios({
+    method: "GET",
+    url: `/customer/${id}`,
+  });
+}
+
+export async function updateBalance({
+  id,
+  data,
+}: {
+  id: string;
+  data: {
+    account_balance: number;
+    currency: string;
+  };
+}) {
+  return Axios({
+    method: "PUT",
+    url: `/customer/${id}/balance`,
+    data,
   });
 }
