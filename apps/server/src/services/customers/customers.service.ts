@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import {
   CreateCustomerDTO,
   CustomerAddressDTO,
+  CustomerBalanceDTO,
   UpdateCustomerDTO,
 } from "src/dtos";
 import { Customer } from "src/entities";
@@ -104,6 +105,34 @@ export class CustomersService {
       return {
         status: HttpStatus.OK,
         message: "Customer address added successfully",
+      };
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateBalance({
+    id,
+    org_id,
+    data,
+  }: {
+    id: string;
+    org_id: string;
+    data: CustomerBalanceDTO;
+  }) {
+    try {
+      const customer = await this.customersRepository.findOne({
+        where: { id, organization_id: org_id },
+      });
+      if (!customer) {
+        throw new HttpException("Customer not found", HttpStatus.NOT_FOUND);
+      }
+
+      await this.customersRepository.update({ id: customer.id }, { ...data });
+
+      return {
+        status: HttpStatus.OK,
+        message: "Customer balance updated successfully",
       };
     } catch (e) {
       throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);

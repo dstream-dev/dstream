@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+  Delete,
   Headers,
   UseGuards,
   HttpStatus,
@@ -198,7 +199,7 @@ export class OrganizationController {
 
   @Roles(UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
-  @Put("/remove/admin/:id")
+  @Delete("/remove/admin/:id")
   async removeAdmin(
     @Headers("x-organization-id") id: string,
     @Param("id") user_id: string,
@@ -229,7 +230,7 @@ export class OrganizationController {
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RolesGuard)
-  @Put("/remove/member/:id")
+  @Delete("/remove/member/:id")
   async removeMember(
     @Headers("x-organization-id") id: string,
     @Param("id") user_id: string,

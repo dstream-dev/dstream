@@ -23,6 +23,7 @@ import {
   CreateCustomerDTO,
   UpdateCustomerDTO,
   CustomerAddressDTO,
+  CustomerBalanceDTO,
 } from "src/dtos";
 import { activityLog } from "src/utils/activityLog";
 
@@ -115,7 +116,7 @@ export class CustomersController {
 
   @Roles(UserRole.ADMIN, UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
-  @Post("/:id/address")
+  @Put("/:id/address")
   async addAddress(
     @Headers("x-organization-id") org_id: string,
     @Param("id") id: string,
@@ -135,6 +136,36 @@ export class CustomersController {
         activity_id: id,
         activity_type: "customer",
         activity: "customer address added",
+      });
+
+      return customer;
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/:id/balance")
+  async updateBalance(
+    @Headers("x-organization-id") org_id: string,
+    @Param("id") id: string,
+    @Body() data: CustomerBalanceDTO,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      const customer = await this.customersService.updateBalance({
+        id,
+        data,
+        org_id,
+      });
+
+      activityLog({
+        org_id: org_id,
+        by: user.email,
+        activity_id: id,
+        activity_type: "customer",
+        activity: "customer balance updated",
       });
 
       return customer;
