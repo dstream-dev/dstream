@@ -49,3 +49,11 @@ export class UpdateCustomerDTO {
   @IsNotEmpty()
   timezone: string;
 }
+
+export class CustomerBalanceDTO {
+  @IsNotEmpty()
+  account_balance: number;
+
+  @IsNotEmpty()
+  currency: string;
+}

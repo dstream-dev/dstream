@@ -1,5 +1,25 @@
-import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { MetricAggregationType } from "src/entities";
+
+export class MetricConditionDTO {
+  @IsNotEmpty()
+  property: string;
+
+  @IsNotEmpty()
+  condition: string;
+
+  @IsNotEmpty()
+  value: string;
+
+  @IsNotEmpty()
+  property_type: string | number;
+}
 
 export class CreateMetricDTO {
   @IsNotEmpty()
@@ -13,7 +33,9 @@ export class CreateMetricDTO {
   aggregation_type: MetricAggregationType;
 
   @IsNotEmpty()
-  condition: object;
+  @ValidateNested({ each: true })
+  @Type(() => MetricConditionDTO)
+  condition: MetricConditionDTO[];
 
   @IsOptional()
   aggregate_field_name: string;
@@ -31,7 +53,9 @@ export class UpdateMetricDTO {
   aggregation_type: MetricAggregationType;
 
   @IsNotEmpty()
-  condition: object;
+  @ValidateNested({ each: true })
+  @Type(() => MetricConditionDTO)
+  condition: MetricConditionDTO[];
 
   @IsOptional()
   aggregate_field_name: string;
