@@ -74,3 +74,16 @@ export async function assignUser(data: { email: string; role: UserRole }) {
     },
   });
 }
+
+export async function removeUser({
+  user_id,
+  role,
+}: {
+  user_id: string;
+  role: UserRole;
+}) {
+  return Axios({
+    method: "DELETE",
+    url: `/organization/remove/${role}/${user_id}`,
+  });
+}

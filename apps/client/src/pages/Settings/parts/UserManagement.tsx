@@ -44,6 +44,34 @@ function UserManagement() {
     }
   );
 
+  const unAssignUser = useMutation(
+    ({ user_id, role }: { user_id: string; role: UserRole }) => {
+      if (role === UserRole.OWNER) {
+        return Promise.reject({
+          message: "You can't remove owner from organization",
+        });
+      }
+
+      return api.organization.removeUser({ user_id, role });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["user_list"]);
+        toast.error("User removed successfully");
+      },
+      onError: (error: {
+        message: string;
+        response: {
+          data: {
+            message: string;
+          };
+        };
+      }) => {
+        toast.error(error?.response?.data?.message || error.message);
+      },
+    }
+  );
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -103,7 +131,12 @@ function UserManagement() {
                       <td className="px-6 py-4">{item.role}</td>
                       <td className="px-6 py-4 text-right">
                         <button
-                          onClick={() => console.log(item.id)}
+                          onClick={() =>
+                            unAssignUser.mutate({
+                              user_id: item.user.id,
+                              role: item.role,
+                            })
+                          }
                           className="font-medium text-gray-600 hover:underline"
                         >
                           Remove
