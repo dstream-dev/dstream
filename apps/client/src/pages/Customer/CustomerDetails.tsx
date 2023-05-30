@@ -6,12 +6,19 @@ import Spinner from "../../components/Spinner";
 import Modal from "../../components/Modal";
 import AdjustBalance from "./parts/AdjustBalance";
 import CreateCustomer from "./parts/CreateCustomer";
+import UpdateAddress from "./parts/UpdateAddress";
 
 function CustomerDetails() {
   const { id } = useParams();
-  const customerDetails = useQuery(["customer", id], () => {
-    return api.customer.getCustomerById(id || "");
-  });
+  const customerDetails = useQuery(
+    ["customer", id],
+    () => {
+      return api.customer.getCustomerById(id || "");
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
   const modealRef = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState<
     "balance" | "address" | "details" | null
@@ -131,6 +138,69 @@ function CustomerDetails() {
                 </div>
               </div>
             </div>
+
+            <div className="flex flex-col justify-center items-start gap-3 w-full">
+              <div className="flex w-full items-center justify-between border-b-[1px] border-gray-200 py-2">
+                <h1 className="font-semibold text-gray-900 text-lg">
+                  Address Details
+                </h1>
+                <span
+                  className="text-sm font-semibold text-gray-500 underline cursor-pointer"
+                  onClick={() => setIsOpen("address")}
+                >
+                  Edit Address
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-between items-start w-full">
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">
+                    Address Line 1
+                  </p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.address_line1 || "-"}
+                  </span>
+                </div>
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">
+                    City Name
+                  </p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.city || "-"}
+                  </span>
+                </div>
+
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">
+                    Address Line 2
+                  </p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.address_line2 || "-"}
+                  </span>
+                </div>
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">
+                    Country
+                  </p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.country || "-"}
+                  </span>
+                </div>
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">State</p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.state || "-"}
+                  </span>
+                </div>
+                <div className="flex items-start justify-center flex-col gap-1 w-1/2 mb-4">
+                  <p className="text-base text-gray-600 font-semibold">
+                    Zip Code
+                  </p>
+                  <span className="text-sm text-gray-800">
+                    {customerDetails?.data?.data.zipcode || "-"}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -161,6 +231,18 @@ function CustomerDetails() {
                     customerDetails?.data?.data.external_customer_id,
                   timezone: customerDetails?.data?.data.timezone,
                 }}
+              />
+            )}
+            {isOpen === "address" && (
+              <UpdateAddress
+                setIsOpen={setIsOpen}
+                id={customerDetails?.data?.data.id}
+                address_line1={customerDetails?.data?.data.address_line1}
+                address_line2={customerDetails?.data?.data.address_line2}
+                city={customerDetails?.data?.data.city}
+                country={customerDetails?.data?.data.country}
+                state={customerDetails?.data?.data.state}
+                zipcode={customerDetails?.data?.data.zipcode}
               />
             )}
           </div>

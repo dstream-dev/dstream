@@ -2,14 +2,29 @@ import React from "react";
 import "./App.css";
 import Routing from "./Routing";
 import { Toaster } from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import SideBar from "./components/SideBar";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {
   const navigate = useNavigate();
-  const { logedIn, setLogedIn, activeOrganization, setActiveOrganization } =
-    React.useContext(AuthContext);
+  const {
+    logedIn,
+    setLogedIn,
+    fetchAccessToken,
+    activeOrganization,
+    setActiveOrganization,
+  } = React.useContext(AuthContext);
+
+  useQuery({
+    queryKey: ["accessToken"],
+    queryFn: () => fetchAccessToken(),
+    refetchInterval: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchIntervalInBackground: false,
+  });
 
   React.useEffect(() => {
     const user = localStorage.getItem("user");

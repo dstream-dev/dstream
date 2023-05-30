@@ -10,9 +10,15 @@ import { toast } from "react-hot-toast";
 function UserManagement() {
   const queryClient = useQueryClient();
   const modalRef = React.useRef<HTMLDivElement>(null);
-  const { data, isLoading } = useQuery(["user_list"], () => {
-    return api.organization.getOrganizationUsers();
-  });
+  const { data, isLoading } = useQuery(
+    ["user_list"],
+    () => {
+      return api.organization.getOrganizationUsers();
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
   const [showModal, setShowModal] = React.useState(false);
   const [newUser, setNewUser] = React.useState<{
     email: string;

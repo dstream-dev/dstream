@@ -62,3 +62,24 @@ export async function updateBalance({
     data,
   });
 }
+
+export async function updateAddress({
+  id,
+  data,
+}: {
+  id: string;
+  data: {
+    address_line1: string;
+    address_line2: string;
+    city: string;
+    state: string;
+    zipcode: number;
+    country: string;
+  };
+}) {
+  return Axios({
+    method: "PUT",
+    url: `/customer/${id}/address`,
+    data,
+  });
+}

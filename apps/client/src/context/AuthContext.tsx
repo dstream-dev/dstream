@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-hot-toast";
 import { IUser } from "../interfaces";
+import api from "../apis";
 
 export interface IAuthContext {
   logedIn: boolean;
@@ -8,6 +9,7 @@ export interface IAuthContext {
   setLogedIn: (value: boolean) => void;
   setActiveOrganization: (value: string) => void;
   setUpStorge: ({ user }: { user: IUser }) => void;
+  fetchAccessToken: () => Promise<boolean>;
 }
 
 export const AuthContext = React.createContext<IAuthContext>(
@@ -36,12 +38,31 @@ const useProviderAuth = () => {
     }
   }
 
+  async function fetchAccessToken() {
+    try {
+      const rt = localStorage.getItem("refresh_token") || "";
+      if (!rt) return false;
+      const response = await api.auth.fetchAccessToken(rt);
+      if (response) {
+        localStorage.setItem("access_token", response.access_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
+        return true;
+      }
+      return false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      toast.error(e.response.data.message || e?.message);
+      return false;
+    }
+  }
+
   return {
     logedIn,
     activeOrganization,
     setUpStorge,
     setLogedIn,
     setActiveOrganization,
+    fetchAccessToken,
   };
 };
 

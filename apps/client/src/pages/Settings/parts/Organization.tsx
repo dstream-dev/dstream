@@ -46,6 +46,9 @@ function Organization() {
     ["organization_details"],
     () => {
       return api.organization.getOrganizationDetail();
+    },
+    {
+      refetchOnWindowFocus: false,
     }
   );
 
