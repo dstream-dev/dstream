@@ -20,6 +20,7 @@ import {
   MetricModule,
   EventModule,
   CustomersModule,
+  PlansModule,
 } from "./services";
 import { BullModule } from "@nestjs/bullmq";
 import { BullBoardController } from "./bullBoard.controller";
@@ -69,6 +70,7 @@ import { BullBoardController } from "./bullBoard.controller";
     EventModule,
     OrganizationModule,
     CustomersModule,
+    PlansModule,
   ],
   controllers: [AppController, BullBoardController],
   providers: [AppService, JwtStrategy],
