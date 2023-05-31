@@ -3,3 +3,4 @@ export * from "./organization.dto";
 export * from "./metric.dto";
 export * from "./event.dto";
 export * from "./customer.dto";
+export * from "./plan.dto";

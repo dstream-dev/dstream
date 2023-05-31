@@ -44,7 +44,7 @@ export class Plan extends BaseEntity {
   name: string;
 
   @Column({ nullable: true })
-  discription: string;
+  description: string;
 
   @Column({ default: "USD" })
   currency: string;
@@ -79,7 +79,7 @@ export class Plan extends BaseEntity {
 @Index(["organization_id", "metric_id", "plan_id"], { unique: true })
 @Index(["organization_id", "plan_id"])
 @Index(["organization_id", "metric_id"])
-@Index(["plan_id", "metric_id"])
+@Index(["plan_id", "metric_id"], { unique: true })
 @Index(["organization_id"])
 @Index(["metric_id"])
 @Index(["plan_id"])
@@ -114,10 +114,10 @@ export class PlanCharges extends BaseEntity {
     enum: PriceModel,
     default: PriceModel.unit,
   })
-  price_model: PriceModel;
+  pricing_model: PriceModel;
 
   @Column("json")
-  priceing_scheme: object;
+  pricing_scheme: object;
 
   @CreateDateColumn()
   created_at: Date;
