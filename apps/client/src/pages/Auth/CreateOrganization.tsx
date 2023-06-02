@@ -29,7 +29,7 @@ interface INewState {
 
 function CreateOrganization() {
   const navigate = useNavigate();
-  const { setActiveOrganization, setLogedIn } = React.useContext(AuthContext);
+  const { setActiveOrganization, setLoggedIn } = React.useContext(AuthContext);
   const [organizationData, setOrganizationData] = React.useReducer(
     (state: IState, newState: INewState) => {
       return { ...state, [newState.type]: newState.value };
@@ -53,7 +53,7 @@ function CreateOrganization() {
       onSuccess: (data) => {
         setActiveOrganization(data.data.id);
         localStorage.setItem("organization_id", data.data.id);
-        setLogedIn(true);
+        setLoggedIn(true);
         navigate("/dashboard");
       },
       onError: (error: {

@@ -1,10 +1,13 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../apis";
+import SwipeUp from "../../components/SwipeUp";
 import Spinner from "../../components/Spinner";
 import { IPlan } from "../../interfaces";
+import CreatePlan from "./parts/CreatePlan";
 
 const Plan = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const { data, isLoading } = useQuery(
     ["plans"],
     () => {
@@ -19,15 +22,15 @@ const Plan = () => {
     <>
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h1 className="font-semibold text-gray-900 text-lg">Metrics</h1>
+          <h1 className="font-semibold text-gray-900 text-lg">Plans</h1>
           <button
             type="button"
             onClick={() => {
-              // setIsOpen(true);
+              setIsOpen(true);
             }}
             className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
           >
-            Create New Metric
+            Create New Plan
           </button>
         </div>
 
@@ -90,21 +93,16 @@ const Plan = () => {
           </table>
         </div>
       </div>
-      {/* {isOpen && (
+      {isOpen && (
         <SwipeUp
           isOpen={isOpen}
           close={() => {
             setIsOpen(false);
-            setEditedData(null);
           }}
         >
-          <CreateMetric
-            setIsOpen={setIsOpen}
-            setEditedData={setEditedData}
-            metricData={editedData}
-          />
+          <CreatePlan setIsOpen={setIsOpen} />
         </SwipeUp>
-      )} */}
+      )}
     </>
   );
 };

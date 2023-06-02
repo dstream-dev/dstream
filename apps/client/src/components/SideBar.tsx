@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 function SideBar() {
   const navigate = useNavigate();
   const sideBarRef = React.useRef(null);
-  const { setLogedIn } = React.useContext(AuthContext);
+  const { setLoggedIn } = React.useContext(AuthContext);
   const [sideBarOpen, setSideBarOpen] = React.useState<boolean>(false);
   const [bigScreen, setBigScreen] = React.useState<boolean>(false);
   useOutsideClick(sideBarRef, () => setSideBarOpen(false));
@@ -125,7 +125,7 @@ function SideBar() {
             <button
               onClick={() => {
                 localStorage.clear();
-                setLogedIn(false);
+                setLoggedIn(false);
                 navigate("/login");
               }}
               type="button"

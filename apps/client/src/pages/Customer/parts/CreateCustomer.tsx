@@ -70,8 +70,8 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
     {
       onSuccess: () => {
         setIsOpen(false);
-        toast.success("Customer updated successfully");
         queryClient.invalidateQueries(["customer", customerData?.id]);
+        toast.success("Customer updated successfully");
       },
       onError: (err: {
         message: string;
@@ -97,7 +97,7 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
               }}
               className="bg-gray-900 hover:bg-gray-500 text-white text-sm py-2 px-4 rounded"
             >
-              Cancle
+              Cancel
             </button>
             <button
               type="button"
@@ -256,7 +256,7 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
             type="button"
             className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-900 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
           >
-            Cancle
+            Cancel
           </button>
         </div>
       )}

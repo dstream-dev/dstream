@@ -4,11 +4,11 @@ import { IUser } from "../interfaces";
 import api from "../apis";
 
 export interface IAuthContext {
-  logedIn: boolean;
+  loggedIn: boolean;
   activeOrganization: string;
-  setLogedIn: (value: boolean) => void;
+  setLoggedIn: (value: boolean) => void;
   setActiveOrganization: (value: string) => void;
-  setUpStorge: ({ user }: { user: IUser }) => void;
+  setUpStorage: ({ user }: { user: IUser }) => void;
   fetchAccessToken: () => Promise<boolean>;
 }
 
@@ -19,11 +19,11 @@ export const AuthContext = React.createContext<IAuthContext>(
 export const useAuth = () => React.useContext(AuthContext);
 
 const useProviderAuth = () => {
-  const [logedIn, setLogedIn] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
   const [activeOrganization, setActiveOrganization] =
     React.useState<string>("");
 
-  async function setUpStorge({ user }: { user: IUser }) {
+  async function setUpStorage({ user }: { user: IUser }) {
     try {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem(
@@ -31,7 +31,7 @@ const useProviderAuth = () => {
         user.organizations[0].organization_id
       );
       setActiveOrganization(user.organizations[0].organization_id);
-      setLogedIn(true);
+      setLoggedIn(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.response.data.message || err?.message);
@@ -57,10 +57,10 @@ const useProviderAuth = () => {
   }
 
   return {
-    logedIn,
+    loggedIn,
     activeOrganization,
-    setUpStorge,
-    setLogedIn,
+    setUpStorage,
+    setLoggedIn,
     setActiveOrganization,
     fetchAccessToken,
   };

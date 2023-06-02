@@ -1,8 +1,10 @@
 import React from "react";
 import Close from "../../../assets/icons/Close";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../apis";
 import { toast } from "react-hot-toast";
+import { ComboBox, Item } from "../../../components/ComboBox";
+import { currencyList } from "../../../utils/currencyList";
 
 interface IProps {
   setIsOpen: (value: "balance" | "address" | null) => void;
@@ -17,6 +19,7 @@ const AdjustBalance = ({
   currency,
   account_balance,
 }: IProps) => {
+  const queryClient = useQueryClient();
   const [balance, setBalance] = React.useReducer(
     (
       state: {
@@ -43,6 +46,7 @@ const AdjustBalance = ({
     {
       onSuccess: () => {
         toast.success("Balance updated successfully");
+        queryClient.invalidateQueries(["customer", id]);
         setIsOpen(null);
       },
       onError: () => {
@@ -68,12 +72,12 @@ const AdjustBalance = ({
       <div className="p-6 space-y-6">
         <div className="mb-6">
           <label className="block mb-2 text-sm font-medium text-gray-900">
-            Ammount
+            Amount
           </label>
           <input
             type="number"
             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
-            placeholder="Enter ammount for balance"
+            placeholder="Enter amount for balance"
             value={balance.account_balance}
             onChange={(e) => {
               setBalance({
@@ -88,19 +92,20 @@ const AdjustBalance = ({
           <label className="block mb-2 text-sm font-medium text-gray-900">
             Currency
           </label>
-          <input
-            type="string"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
-            placeholder="Enter ammount for balance"
-            value={balance.currency}
-            onChange={(e) => {
+          <ComboBox
+            label=" "
+            selectedKey={balance.currency}
+            onSelectionChange={(e) => {
               setBalance({
                 type: "currency",
-                value: e.target.value,
+                value: e as string,
               });
             }}
-            required
-          />
+          >
+            {currencyList.map((currency) => (
+              <Item key={currency}>{currency}</Item>
+            ))}
+          </ComboBox>
         </div>
       </div>
 
@@ -119,7 +124,7 @@ const AdjustBalance = ({
           type="button"
           className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-900 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
         >
-          Cancle
+          Cancel
         </button>
       </div>
     </div>

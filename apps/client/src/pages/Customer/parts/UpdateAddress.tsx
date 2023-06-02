@@ -1,6 +1,6 @@
 import React from "react";
 import Close from "../../../assets/icons/Close";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../apis";
 import { toast } from "react-hot-toast";
 
@@ -25,6 +25,7 @@ const UpdateAddress = ({
   zipcode,
   country,
 }: IProps) => {
+  const queryClient = useQueryClient();
   const [address, setAddress] = React.useReducer(
     (
       state: {
@@ -75,6 +76,7 @@ const UpdateAddress = ({
     {
       onSuccess: () => {
         toast.success("Address updated successfully");
+        queryClient.invalidateQueries(["customer", id]);
         setIsOpen(null);
       },
       onError: () => {

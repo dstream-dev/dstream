@@ -20,7 +20,7 @@ function Login() {
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
-  const { setUpStorge } = React.useContext(AuthContext);
+  const { setUpStorage } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   const signInWithGoogle = useMutation(
@@ -34,7 +34,7 @@ function Login() {
     },
     {
       onSuccess: async ({ data }: { data: IUser }) => {
-        setUpStorge({
+        setUpStorage({
           user: data,
         });
 
@@ -68,7 +68,7 @@ function Login() {
     },
     {
       onSuccess: async ({ data }: { data: IUser }) => {
-        setUpStorge({
+        setUpStorage({
           user: data,
         });
         if (data.organizations && data.organizations.length > 0) {

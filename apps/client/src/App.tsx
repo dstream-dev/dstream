@@ -10,8 +10,8 @@ import { AuthContext } from "./context/AuthContext";
 function App() {
   const navigate = useNavigate();
   const {
-    logedIn,
-    setLogedIn,
+    loggedIn,
+    setLoggedIn,
     fetchAccessToken,
     activeOrganization,
     setActiveOrganization,
@@ -38,15 +38,15 @@ function App() {
       if (!orgs) {
         navigate("/onboard");
       } else {
-        setLogedIn(true);
+        setLoggedIn(true);
       }
     }
   }, []);
 
   return (
     <>
-      {logedIn && activeOrganization && <SideBar />}
-      <div className={`${!logedIn ? "" : "p-4 sm:ml-64"} `}>
+      {loggedIn && activeOrganization && <SideBar />}
+      <div className={`${!loggedIn ? "" : "p-4 sm:ml-64"} `}>
         <Routing />
       </div>
       <Toaster position="bottom-right"></Toaster>
