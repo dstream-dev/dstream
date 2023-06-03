@@ -62,11 +62,11 @@ export class Plan extends BaseEntity {
   @Column()
   organization_id: string;
 
-  @Column("json")
-  min_charges: {
-    amount: number;
-    name: string;
-  };
+  @Column({ default: 0 })
+  min_charges_amount: number;
+
+  @Column({ nullable: true })
+  min_charges_name: string;
 
   @CreateDateColumn()
   created_at: Date;

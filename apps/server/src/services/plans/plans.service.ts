@@ -74,9 +74,8 @@ export class PlansService {
             currency: data.currency,
             external_plan_id: data.external_plan_id,
             payment_term: data.payment_term,
-            min_charges: {
-              ...data.min_charges,
-            },
+            min_charges_amount: data.min_charges_amount,
+            min_charges_name: data.min_charges_name,
           });
 
           for (let i = 0; i < data.charges.length; i += 1) {
@@ -131,9 +130,8 @@ export class PlansService {
             currency: data.currency,
             external_plan_id: data.external_plan_id,
             payment_term: data.payment_term,
-            min_charges: {
-              ...data.min_charges,
-            },
+            min_charges_amount: data.min_charges_amount,
+            min_charges_name: data.min_charges_name,
           },
         );
 

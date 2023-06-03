@@ -56,10 +56,11 @@ export class PlanDTO {
   @IsEnum(PlanPaymentTerm)
   payment_term: PlanPaymentTerm;
 
-  @ValidateNested()
-  @IsNotEmpty()
-  @Type(() => PlanMinChargesDTO)
-  min_charges: PlanMinChargesDTO;
+  @IsOptional()
+  min_charges_amount: number;
+
+  @IsOptional()
+  min_charges_name: string;
 
   @ValidateNested({ each: true })
   @IsNotEmpty()
