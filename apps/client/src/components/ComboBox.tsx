@@ -37,7 +37,7 @@ export function ComboBox<T extends object>(props: ComboBoxProps<T>) {
   return (
     <div className="inline-flex text-base flex-col relative w-full">
       <div
-        className={`relative flex flex-row rounded-md overflow-hidden shadow-sm border-2 ${
+        className={`relative flex flex-row rounded-md overflow-hidden shadow-sm border-[1px] ${
           state.isFocused ? "border-gray-900" : "border-gray-300"
         }`}
       >
@@ -49,7 +49,7 @@ export function ComboBox<T extends object>(props: ComboBoxProps<T>) {
         <button
           {...buttonProps}
           ref={buttonRef}
-          className={`px-1 bg-gray-100 cursor-default border-l-2 ${
+          className={`px-1 bg-gray-100 cursor-default border-l-[1px] ${
             state.isFocused
               ? "border-gray-900 text-gray-900"
               : "border-gray-300 text-gray-500"

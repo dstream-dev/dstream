@@ -76,7 +76,7 @@ const AdjustBalance = ({
           </label>
           <input
             type="number"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+            className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
             placeholder="Enter amount for balance"
             value={balance.account_balance}
             onChange={(e) => {

@@ -134,7 +134,7 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
               </label>
               <input
                 type="text"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
                 placeholder="name e.g. dStream"
                 value={userDetails.name}
                 onChange={(e) => {
@@ -152,7 +152,7 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
               </label>
               <input
                 type="email"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
                 placeholder="User Email e.g. john@gmail.com"
                 value={userDetails.email}
                 onChange={(e) => {
@@ -170,7 +170,7 @@ function CreateCustomer({ setIsOpen, customerData }: IProps) {
               </label>
               <input
                 type="email"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
                 placeholder="User Email e.g. john@gmail.com"
                 value={userDetails.external_customer_id}
                 onChange={(e) => {

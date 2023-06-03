@@ -106,7 +106,7 @@ const UpdateAddress = ({
           </label>
           <input
             type="string"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+            className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
             placeholder="Address Line 1 e.g. 123 Main St"
             value={address.address_line1}
             onChange={(e) => {
@@ -121,7 +121,7 @@ const UpdateAddress = ({
           </label>
           <input
             type="string"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+            className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
             placeholder="Address Line 2 e.g. Apt 123"
             value={address.address_line2}
             onChange={(e) => {
@@ -137,7 +137,7 @@ const UpdateAddress = ({
             </label>
             <input
               type="string"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
               placeholder="City e.g. San Francisco"
               value={address.city}
               onChange={(e) => {
@@ -152,7 +152,7 @@ const UpdateAddress = ({
             </label>
             <input
               type="string"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
               placeholder="State e.g. "
               value={address.state}
               onChange={(e) => {
@@ -169,7 +169,7 @@ const UpdateAddress = ({
             </label>
             <input
               type="number"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
               placeholder="Address Line 1 e.g. 123 Main St"
               value={address.zipcode}
               onChange={(e) => {
@@ -184,7 +184,7 @@ const UpdateAddress = ({
             </label>
             <input
               type="string"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-900 focus:outline-none block w-full p-2.5"
               placeholder="Address Line 1 e.g. 123 Main St"
               value={address.country}
               onChange={(e) => {
@@ -209,9 +209,9 @@ const UpdateAddress = ({
         <button
           onClick={() => setIsOpen(null)}
           type="button"
-          className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-900 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
+          className="text-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-900 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
         >
-          Cancle
+          Cancel
         </button>
       </div>
     </div>

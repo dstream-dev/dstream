@@ -346,7 +346,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
                           return val;
                         });
                       }}
-                      className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block p-2"
+                      className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block p-2"
                       placeholder="value e.g. 12"
                     />
                   )}
@@ -465,7 +465,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
               placeholder="name e.g. dStream"
               value={metricDetails.name}
               onChange={(e) => {
@@ -484,7 +484,7 @@ function CreateMetric({ setIsOpen, metricData, setEditedData }: IProps) {
             </label>
             <textarea
               rows={5}
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900  block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900  block w-full p-2.5"
               placeholder="Description e.g. User for calculate number of apis calls"
               value={metricDetails.description}
               onChange={(e) => {

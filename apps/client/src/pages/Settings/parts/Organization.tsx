@@ -117,11 +117,11 @@ function Organization() {
         <div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">
-              Organizarion Name
+              Organization Name
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
               placeholder="Organization name e.g. dStream"
               value={
                 organizationData.name !== "-"
@@ -143,8 +143,8 @@ function Organization() {
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-              placeholder="Adddres first line...."
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              placeholder="Address first line...."
               required
               value={
                 organizationData.address_line1 !== "-"
@@ -166,8 +166,8 @@ function Organization() {
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-              placeholder="Adddres second line...."
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              placeholder="Address second line...."
               required
               value={
                 organizationData.address_line2 !== "-"
@@ -188,7 +188,7 @@ function Organization() {
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
               placeholder="City name, e.g. New York"
               required
               value={
@@ -211,7 +211,7 @@ function Organization() {
               </label>
               <input
                 type="text"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
                 placeholder="State name, e.g. Delhi"
                 required
                 value={
@@ -233,7 +233,7 @@ function Organization() {
               </label>
               <input
                 type="number"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
                 placeholder="Zip Code of Office"
                 required
                 value={
@@ -256,7 +256,7 @@ function Organization() {
             </label>
             <input
               type="text"
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
               placeholder="Country name e.g. India"
               required
               value={
