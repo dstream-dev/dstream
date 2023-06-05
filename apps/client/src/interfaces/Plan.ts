@@ -17,7 +17,7 @@ export enum PriceModel {
   "tiered" = "tiered",
   "package" = "package",
   "bulk" = "bulk",
-  "matrix" = "matrix",
+  // "matrix" = "matrix",
 }
 
 export interface IPlan {
@@ -47,3 +47,48 @@ export interface IPlanCharges {
   pricing_model: PriceModel;
   pricing_scheme: object;
 }
+
+export const UnitPriceModel: {
+  price_per_unit: number;
+} = {
+  price_per_unit: 0,
+};
+
+export const TieredPriceModel: Array<{
+  from: number;
+  to: number;
+  price_per_unit: number;
+}> = [
+  {
+    from: 0,
+    to: 10,
+    price_per_unit: 0,
+  },
+  {
+    from: 11,
+    to: Infinity,
+    price_per_unit: 0,
+  },
+];
+
+export const PackagePriceModel: {
+  package_size: number;
+  package_per_price: number;
+} = {
+  package_size: 0,
+  package_per_price: 0,
+};
+
+export const BulkPriceModel: Array<{
+  max_units: number;
+  price_per_unit: number;
+}> = [
+  {
+    max_units: 0,
+    price_per_unit: 0,
+  },
+  {
+    max_units: Infinity,
+    price_per_unit: 0,
+  },
+];

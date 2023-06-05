@@ -1,10 +1,24 @@
 import React from "react";
+import _ from "lodash";
+import { useQuery } from "@tanstack/react-query";
 import { ComboBox, Item } from "../../../components/ComboBox";
 import { currencyList } from "../../../utils/currencyList";
 import Close from "../../../assets/icons/Close";
-import { ChargesCadence, IMetric, PlanPaymentTerm } from "../../../interfaces";
-import { useQuery } from "@tanstack/react-query";
+import {
+  IMetric,
+  PriceModel,
+  ChargesCadence,
+  PlanPaymentTerm,
+  UnitPriceModel,
+  PackagePriceModel,
+  TieredPriceModel,
+  BulkPriceModel,
+} from "../../../interfaces";
 import api from "../../../apis";
+import UnitPrice from "./UnitPrice";
+import PackagePrice from "./PackagePrice";
+import TieredPrice from "./TieredPrice";
+import BulkPrice from "./BulkPrice";
 
 interface IProps {
   setIsOpen: (value: boolean) => void;
@@ -46,7 +60,7 @@ function CreatePlan({ setIsOpen }: IProps) {
       active_min_charge: boolean;
       min_charge: number;
       pricing_model: string;
-      pricing_scheme: object;
+      pricing_scheme: any;
     }>
   >([
     {
@@ -88,7 +102,7 @@ function CreatePlan({ setIsOpen }: IProps) {
           <button
             type="button"
             onClick={() => {
-              // customerCreate.mutate();
+              console.log({ planCharges });
             }}
             className="bg-gray-900 hover:bg-white0 text-white text-sm py-2 px-4 rounded"
           >
@@ -270,7 +284,7 @@ function CreatePlan({ setIsOpen }: IProps) {
                       </div>
                       <div className="w-full">
                         <label className="block mb-2 text-sm font-medium text-gray-900">
-                          Select Cacdence
+                          Select Cadence
                         </label>
                         <ComboBox
                           label=" "
@@ -290,8 +304,108 @@ function CreatePlan({ setIsOpen }: IProps) {
                           )}
                         </ComboBox>
                       </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center w-full">
+                          <input
+                            type="checkbox"
+                            checked={planCharge.active_min_charge}
+                            onChange={(e) => {
+                              setPlanCharges((prv) => {
+                                const newPlanCharges = [...prv];
+                                newPlanCharges[index].active_min_charge =
+                                  e.target.checked;
+                                return newPlanCharges;
+                              });
+                            }}
+                            className="w-4 h-4 text-gray-900 bg-white border-gray-300 rounded"
+                          />
+                          <label className="ml-2 text-sm text-gray-900 flex flex-col">
+                            Add price minimum spend
+                          </label>
+                        </div>
+                        {planCharge.active_min_charge && (
+                          <input
+                            type="number"
+                            className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                            placeholder="minimum charges name e.g. Platform fee"
+                            value={planCharge.min_charge || 0}
+                            onChange={(e) => {
+                              setPlanCharges((prv) => {
+                                const newPlanCharges = [...prv];
+                                newPlanCharges[index].min_charge = parseFloat(
+                                  e.target.value
+                                );
+                                return newPlanCharges;
+                              });
+                            }}
+                            required
+                          />
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1 w-full">djk</div>
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col gap-4">
+                        <div className="w-full">
+                          <label className="block mb-2 text-sm font-medium text-gray-900">
+                            Price Model
+                          </label>
+                          <ComboBox
+                            label=" "
+                            selectedKey={planCharge.pricing_model}
+                            onSelectionChange={(e) => {
+                              setPlanCharges((prv) => {
+                                const newPlanCharges = [...prv];
+                                newPlanCharges[index].pricing_model =
+                                  e as string;
+                                newPlanCharges[index].pricing_scheme =
+                                  (e as string) === "unit"
+                                    ? _.cloneDeep(UnitPriceModel)
+                                    : (e as string) === "package"
+                                    ? _.cloneDeep(PackagePriceModel)
+                                    : (e as string) === "tiered"
+                                    ? _.cloneDeep(TieredPriceModel)
+                                    : (e as string) === "bulk"
+                                    ? _.cloneDeep(BulkPriceModel)
+                                    : _.cloneDeep({});
+                                return newPlanCharges;
+                              });
+                            }}
+                          >
+                            {Object.keys(PriceModel).map((model: string) => (
+                              <Item key={model}>{model}</Item>
+                            ))}
+                          </ComboBox>
+                        </div>
+                        {planCharge.pricing_model === "unit" && (
+                          <UnitPrice
+                            planCharge={planCharge}
+                            setPlanCharges={setPlanCharges}
+                            index={index}
+                          />
+                        )}
+                        {planCharge.pricing_model === "package" && (
+                          <PackagePrice
+                            planCharge={planCharge}
+                            setPlanCharges={setPlanCharges}
+                            index={index}
+                          />
+                        )}
+                        {planCharge.pricing_model === "tiered" && (
+                          <TieredPrice
+                            planCharge={planCharge}
+                            setPlanCharges={setPlanCharges}
+                            index={index}
+                          />
+                        )}
+                        {planCharge.pricing_model === "bulk" && (
+                          <BulkPrice
+                            planCharge={planCharge}
+                            setPlanCharges={setPlanCharges}
+                            index={index}
+                          />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
