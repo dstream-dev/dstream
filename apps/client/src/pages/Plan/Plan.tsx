@@ -5,8 +5,10 @@ import SwipeUp from "../../components/SwipeUp";
 import Spinner from "../../components/Spinner";
 import { IPlan } from "../../interfaces";
 import CreatePlan from "./parts/CreatePlan";
+import { useNavigate } from "react-router-dom";
 
 const Plan = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = React.useState(false);
   const { data, isLoading } = useQuery(
     ["plans"],
@@ -69,8 +71,11 @@ const Plan = () => {
                   {(data?.data || []).map((item: IPlan) => {
                     return (
                       <tr
+                        onClick={() => {
+                          navigate(`/plans/${item.id}`);
+                        }}
                         key={item.id}
-                        className="bg-white border-b hover:bg-gray-50 w-full"
+                        className="bg-white border-b hover:bg-gray-50 w-full cursor-pointer"
                       >
                         <th className="px-6 py-4 font-medium text-gray-900">
                           {item.name}

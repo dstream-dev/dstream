@@ -1,6 +1,7 @@
 import React from "react";
+import { toast } from "react-hot-toast";
 import _ from "lodash";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ComboBox, Item } from "../../../components/ComboBox";
 import { currencyList } from "../../../utils/currencyList";
 import Close from "../../../assets/icons/Close";
@@ -25,9 +26,13 @@ interface IProps {
 }
 
 function CreatePlan({ setIsOpen }: IProps) {
+  const queryClient = useQueryClient();
+  const [step, setStep] = React.useState(1);
   const [planDetails, setPlanDetails] = React.useReducer(
     (
       state: {
+        name: string;
+        description: string;
         currency: string;
         external_plan_id: string;
         payment_term: string;
@@ -36,6 +41,8 @@ function CreatePlan({ setIsOpen }: IProps) {
       },
       newState: {
         type:
+          | "name"
+          | "description"
           | "currency"
           | "external_plan_id"
           | "payment_term"
@@ -45,6 +52,8 @@ function CreatePlan({ setIsOpen }: IProps) {
       }
     ) => ({ ...state, [newState.type]: newState.value }),
     {
+      name: "",
+      description: "",
       currency: "USD",
       external_plan_id: "",
       payment_term: "due_on_issue",
@@ -85,6 +94,30 @@ function CreatePlan({ setIsOpen }: IProps) {
     }
   );
 
+  const createPlan = useMutation(
+    () => {
+      return api.plan.createPlan({
+        data: {
+          ...planDetails,
+          charges: planCharges,
+        },
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["plans"]);
+        toast.success("Plan created successfully");
+        setIsOpen(false);
+      },
+      onError: (err: {
+        message: string;
+        response: { data: { message: string } };
+      }) => {
+        toast.error(err?.response?.data?.message || err.message);
+      },
+    }
+  );
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6 border-b-2 py-4 sticky top-0 bg-white z-50">
@@ -99,320 +132,397 @@ function CreatePlan({ setIsOpen }: IProps) {
           >
             Cancel
           </button>
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={() => {
+                setStep(1);
+              }}
+              className="bg-gray-900 hover:bg-white0 text-white text-sm py-2 px-4 rounded"
+            >
+              Back
+            </button>
+          )}
           <button
             type="button"
             onClick={() => {
-              console.log({ planCharges });
+              if (step === 1) {
+                setStep(2);
+              } else {
+                createPlan.mutate();
+              }
             }}
             className="bg-gray-900 hover:bg-white0 text-white text-sm py-2 px-4 rounded"
           >
-            Save
+            {step === 1 ? "Next" : "Create"}
           </button>
         </div>
       </div>
 
-      <div className="flex items-start justify-between gap-4 relative">
-        <div className="w-1/3 sticky top-[90px] self-start">
-          <div className="flex flex-col gap-6">
-            <h6 className="text-sm text-gray-900 font-semibold mb-4">
-              Plan Details
-            </h6>
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
-                Currency
-              </label>
-              <ComboBox
-                label=" "
-                selectedKey={planDetails.currency}
-                onSelectionChange={(e) => {
-                  setPlanDetails({
-                    type: "currency",
-                    value: e,
-                  });
-                }}
-              >
-                {currencyList.map((currency) => (
-                  <Item key={currency}>{currency}</Item>
-                ))}
-              </ComboBox>
-            </div>
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
-                External ID
-              </label>
-              <input
-                type="text"
-                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-                placeholder="external id e.g. 1234"
-                value={planDetails.external_plan_id}
-                onChange={(e) => {
-                  setPlanDetails({
-                    type: "external_plan_id",
-                    value: e.target.value,
-                  });
-                }}
-                required
-              />
-            </div>
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
-                Net payment terms
-              </label>
-              <ComboBox
-                label=" "
-                selectedKey={planDetails.payment_term}
-                onSelectionChange={(e) => {
-                  setPlanDetails({
-                    type: "payment_term",
-                    value: e,
-                  });
-                }}
-              >
-                {Object.keys(PlanPaymentTerm).map((paymentTerm) => (
-                  <Item key={paymentTerm}>{paymentTerm}</Item>
-                ))}
-              </ComboBox>
-            </div>
+      {step === 1 && (
+        <div className="flex items-start justify-between gap-4 relative">
+          <div className="w-1/3 sticky top-[90px] self-start">
+            <div className="flex flex-col gap-6">
+              <h6 className="text-sm text-gray-900 font-semibold mb-4">
+                Plan Details
+              </h6>
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Currency
+                </label>
+                <ComboBox
+                  label=" "
+                  selectedKey={planDetails.currency}
+                  onSelectionChange={(e) => {
+                    setPlanDetails({
+                      type: "currency",
+                      value: e,
+                    });
+                  }}
+                >
+                  {currencyList.map((currency) => (
+                    <Item key={currency}>{currency}</Item>
+                  ))}
+                </ComboBox>
+              </div>
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  External ID
+                </label>
+                <input
+                  type="text"
+                  className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                  placeholder="external id e.g. 1234"
+                  value={planDetails.external_plan_id}
+                  onChange={(e) => {
+                    setPlanDetails({
+                      type: "external_plan_id",
+                      value: e.target.value,
+                    });
+                  }}
+                  required
+                />
+              </div>
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Net payment terms
+                </label>
+                <ComboBox
+                  label=" "
+                  selectedKey={planDetails.payment_term}
+                  onSelectionChange={(e) => {
+                    setPlanDetails({
+                      type: "payment_term",
+                      value: e,
+                    });
+                  }}
+                >
+                  {Object.keys(PlanPaymentTerm).map((paymentTerm) => (
+                    <Item key={paymentTerm}>{paymentTerm}</Item>
+                  ))}
+                </ComboBox>
+              </div>
 
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
-                Minimum charges
-              </label>
-              <input
-                type="number"
-                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-                placeholder="minimum charges e.g. 100"
-                value={planDetails.min_charges_amount}
-                onChange={(e) => {
-                  setPlanDetails({
-                    type: "min_charges_amount",
-                    value: e.target.value,
-                  });
-                }}
-                required
-              />
-            </div>
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Minimum charges
+                </label>
+                <input
+                  type="number"
+                  className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                  placeholder="minimum charges e.g. 100"
+                  value={planDetails.min_charges_amount}
+                  onChange={(e) => {
+                    setPlanDetails({
+                      type: "min_charges_amount",
+                      value: e.target.value,
+                    });
+                  }}
+                  required
+                />
+              </div>
 
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
-                Minimum charges name
-              </label>
-              <input
-                type="text"
-                className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-                placeholder="minimum charges name e.g. Platform fee"
-                value={planDetails.min_charges_name}
-                onChange={(e) => {
-                  setPlanDetails({
-                    type: "min_charges_name",
-                    value: e.target.value,
-                  });
-                }}
-                required
-              />
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Minimum charges name
+                </label>
+                <input
+                  type="text"
+                  className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                  placeholder="minimum charges name e.g. Platform fee"
+                  value={planDetails.min_charges_name}
+                  onChange={(e) => {
+                    setPlanDetails({
+                      type: "min_charges_name",
+                      value: e.target.value,
+                    });
+                  }}
+                  required
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex-1 h-auto">
-          <div className="w-full border-l-2 pl-2">
-            <div className="flex items-center justify-between mb-4">
-              <h6 className="text-sm text-gray-900 font-semibold">
-                Plan Charges
-              </h6>
-              <button
-                type="button"
-                onClick={() => {
-                  setPlanCharges((prv) => [
-                    ...prv,
-                    {
-                      metric_id: "",
-                      cadence: "monthly",
-                      active_min_charge: false,
-                      min_charge: 0,
-                      pricing_model: "unit",
-                      pricing_scheme: {
-                        price_per_unit: 0,
+          <div className="flex-1 h-auto">
+            <div className="w-full border-l-2 pl-2">
+              <div className="flex items-center justify-between mb-4">
+                <h6 className="text-sm text-gray-900 font-semibold">
+                  Plan Charges
+                </h6>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlanCharges((prv) => [
+                      ...prv,
+                      {
+                        metric_id: "",
+                        cadence: "monthly",
+                        active_min_charge: false,
+                        min_charge: 0,
+                        pricing_model: "unit",
+                        pricing_scheme: {
+                          price_per_unit: 0,
+                        },
                       },
-                    },
-                  ]);
-                }}
-                className="bg-gray-900 hover:bg-white0 text-white text-sm py-2 px-4 rounded"
-              >
-                Add Item
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {planCharges.map((planCharge, index) => (
-                <div
-                  key={index}
-                  className="relative w-full p-4 bg-slate-100 rounded-md"
+                    ]);
+                  }}
+                  className="bg-gray-900 hover:bg-white0 text-white text-sm py-2 px-4 rounded"
                 >
-                  <button
-                    onClick={() => {
-                      setPlanCharges((prv) =>
-                        prv.filter((_, i) => i !== index)
-                      );
-                    }}
-                    type="button"
-                    className="text-gray-700 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center absolute top-1 right-1 z-20"
+                  Add Item
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {planCharges.map((planCharge, index) => (
+                  <div
+                    key={index}
+                    className="relative w-full p-4 bg-slate-100 rounded-md"
                   >
-                    <Close classs="w-4 h-4 relative" />
-                    <span className="sr-only relative">Delete Charge</span>
-                  </button>
-                  <div className="flex justify-between relative items-start gap-6">
-                    <div className="w-1/3 flex flex-col gap-4 justify-start items-center">
-                      <div className="w-full">
-                        <label className="block mb-2 text-sm font-medium text-gray-900">
-                          Select Metric
-                        </label>
-                        <ComboBox
-                          label=" "
-                          selectedKey={planCharge.metric_id}
-                          onSelectionChange={(e) => {
-                            setPlanCharges((prv) => {
-                              const newPlanCharges = [...prv];
-                              newPlanCharges[index].metric_id = e as string;
-                              return newPlanCharges;
-                            });
-                          }}
-                        >
-                          {(metrics.data?.data || []).map((metric: IMetric) => (
-                            <Item key={metric.id}>{metric.name}</Item>
-                          ))}
-                        </ComboBox>
-                      </div>
-                      <div className="w-full">
-                        <label className="block mb-2 text-sm font-medium text-gray-900">
-                          Select Cadence
-                        </label>
-                        <ComboBox
-                          label=" "
-                          selectedKey={planCharge.cadence}
-                          onSelectionChange={(e) => {
-                            setPlanCharges((prv) => {
-                              const newPlanCharges = [...prv];
-                              newPlanCharges[index].cadence = e as string;
-                              return newPlanCharges;
-                            });
-                          }}
-                        >
-                          {Object.keys(ChargesCadence).map(
-                            (cadence: string) => (
-                              <Item key={cadence}>{cadence}</Item>
-                            )
-                          )}
-                        </ComboBox>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center w-full">
-                          <input
-                            type="checkbox"
-                            checked={planCharge.active_min_charge}
-                            onChange={(e) => {
-                              setPlanCharges((prv) => {
-                                const newPlanCharges = [...prv];
-                                newPlanCharges[index].active_min_charge =
-                                  e.target.checked;
-                                return newPlanCharges;
-                              });
-                            }}
-                            className="w-4 h-4 text-gray-900 bg-white border-gray-300 rounded"
-                          />
-                          <label className="ml-2 text-sm text-gray-900 flex flex-col">
-                            Add price minimum spend
-                          </label>
-                        </div>
-                        {planCharge.active_min_charge && (
-                          <input
-                            type="number"
-                            className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
-                            placeholder="minimum charges name e.g. Platform fee"
-                            value={planCharge.min_charge || 0}
-                            onChange={(e) => {
-                              setPlanCharges((prv) => {
-                                const newPlanCharges = [...prv];
-                                newPlanCharges[index].min_charge = parseFloat(
-                                  e.target.value
-                                );
-                                return newPlanCharges;
-                              });
-                            }}
-                            required
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1 w-full">
-                      <div className="flex flex-col gap-4">
+                    <button
+                      onClick={() => {
+                        setPlanCharges((prv) =>
+                          prv.filter((_, i) => i !== index)
+                        );
+                      }}
+                      type="button"
+                      className="text-gray-700 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center absolute top-1 right-1 z-20"
+                    >
+                      <Close classs="w-4 h-4 relative" />
+                      <span className="sr-only relative">Delete Charge</span>
+                    </button>
+                    <div className="flex justify-between relative items-start gap-6">
+                      <div className="w-1/3 flex flex-col gap-4 justify-start items-start">
                         <div className="w-full">
                           <label className="block mb-2 text-sm font-medium text-gray-900">
-                            Price Model
+                            Select Metric
                           </label>
                           <ComboBox
                             label=" "
-                            selectedKey={planCharge.pricing_model}
+                            selectedKey={planCharge.metric_id}
                             onSelectionChange={(e) => {
                               setPlanCharges((prv) => {
                                 const newPlanCharges = [...prv];
-                                newPlanCharges[index].pricing_model =
-                                  e as string;
-                                newPlanCharges[index].pricing_scheme =
-                                  (e as string) === "unit"
-                                    ? _.cloneDeep(UnitPriceModel)
-                                    : (e as string) === "package"
-                                    ? _.cloneDeep(PackagePriceModel)
-                                    : (e as string) === "tiered"
-                                    ? _.cloneDeep(TieredPriceModel)
-                                    : (e as string) === "bulk"
-                                    ? _.cloneDeep(BulkPriceModel)
-                                    : _.cloneDeep({});
+                                newPlanCharges[index].metric_id = e as string;
                                 return newPlanCharges;
                               });
                             }}
                           >
-                            {Object.keys(PriceModel).map((model: string) => (
-                              <Item key={model}>{model}</Item>
-                            ))}
+                            {(metrics.data?.data || []).map(
+                              (metric: IMetric) => (
+                                <Item key={metric.id}>{metric.name}</Item>
+                              )
+                            )}
                           </ComboBox>
                         </div>
-                        {planCharge.pricing_model === "unit" && (
-                          <UnitPrice
-                            planCharge={planCharge}
-                            setPlanCharges={setPlanCharges}
-                            index={index}
-                          />
-                        )}
-                        {planCharge.pricing_model === "package" && (
-                          <PackagePrice
-                            planCharge={planCharge}
-                            setPlanCharges={setPlanCharges}
-                            index={index}
-                          />
-                        )}
-                        {planCharge.pricing_model === "tiered" && (
-                          <TieredPrice
-                            planCharge={planCharge}
-                            setPlanCharges={setPlanCharges}
-                            index={index}
-                          />
-                        )}
-                        {planCharge.pricing_model === "bulk" && (
-                          <BulkPrice
-                            planCharge={planCharge}
-                            setPlanCharges={setPlanCharges}
-                            index={index}
-                          />
-                        )}
+                        <div className="w-full">
+                          <label className="block mb-2 text-sm font-medium text-gray-900">
+                            Select Cadence
+                          </label>
+                          <ComboBox
+                            label=" "
+                            selectedKey={planCharge.cadence}
+                            onSelectionChange={(e) => {
+                              setPlanCharges((prv) => {
+                                const newPlanCharges = [...prv];
+                                newPlanCharges[index].cadence = e as string;
+                                return newPlanCharges;
+                              });
+                            }}
+                          >
+                            {Object.keys(ChargesCadence).map(
+                              (cadence: string) => (
+                                <Item key={cadence}>{cadence}</Item>
+                              )
+                            )}
+                          </ComboBox>
+                        </div>
+                        <div className="ml-5 flex flex-col gap-2">
+                          <div className="flex items-center w-full">
+                            <input
+                              type="checkbox"
+                              checked={planCharge.active_min_charge}
+                              onChange={(e) => {
+                                setPlanCharges((prv) => {
+                                  const newPlanCharges = [...prv];
+                                  newPlanCharges[index].active_min_charge =
+                                    e.target.checked;
+                                  return newPlanCharges;
+                                });
+                              }}
+                              className="w-4 h-4 text-gray-900 bg-white border-gray-300 rounded"
+                            />
+                            <label className="ml-2 text-sm text-gray-900 flex flex-col">
+                              Add price minimum spend
+                            </label>
+                          </div>
+                          {planCharge.active_min_charge && (
+                            <input
+                              type="number"
+                              className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                              placeholder="minimum charges name e.g. Platform fee"
+                              value={planCharge.min_charge || 0}
+                              onChange={(e) => {
+                                setPlanCharges((prv) => {
+                                  const newPlanCharges = [...prv];
+                                  newPlanCharges[index].min_charge = parseFloat(
+                                    e.target.value
+                                  );
+                                  return newPlanCharges;
+                                });
+                              }}
+                              required
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col gap-4">
+                          <div className="w-full">
+                            <label className="block mb-2 text-sm font-medium text-gray-900">
+                              Price Model
+                            </label>
+                            <ComboBox
+                              label=" "
+                              selectedKey={planCharge.pricing_model}
+                              onSelectionChange={(e) => {
+                                setPlanCharges((prv) => {
+                                  const newPlanCharges = [...prv];
+                                  newPlanCharges[index].pricing_model =
+                                    e as string;
+                                  newPlanCharges[index].pricing_scheme =
+                                    (e as string) === "unit"
+                                      ? _.cloneDeep(UnitPriceModel)
+                                      : (e as string) === "package"
+                                      ? _.cloneDeep(PackagePriceModel)
+                                      : (e as string) === "tiered"
+                                      ? _.cloneDeep(TieredPriceModel)
+                                      : (e as string) === "bulk"
+                                      ? _.cloneDeep(BulkPriceModel)
+                                      : _.cloneDeep({});
+                                  return newPlanCharges;
+                                });
+                              }}
+                            >
+                              {Object.keys(PriceModel).map((model: string) => (
+                                <Item key={model}>{model}</Item>
+                              ))}
+                            </ComboBox>
+                          </div>
+                          {planCharge.pricing_model === "unit" && (
+                            <UnitPrice
+                              planCharge={planCharge}
+                              setPlanCharges={setPlanCharges}
+                              index={index}
+                            />
+                          )}
+                          {planCharge.pricing_model === "package" && (
+                            <PackagePrice
+                              planCharge={planCharge}
+                              setPlanCharges={setPlanCharges}
+                              index={index}
+                            />
+                          )}
+                          {planCharge.pricing_model === "tiered" && (
+                            <TieredPrice
+                              planCharge={planCharge}
+                              setPlanCharges={setPlanCharges}
+                              index={index}
+                            />
+                          )}
+                          {planCharge.pricing_model === "bulk" && (
+                            <BulkPrice
+                              planCharge={planCharge}
+                              setPlanCharges={setPlanCharges}
+                              index={index}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {step === 2 && (
+        <div className="flex items-center w-full justify-center gap-4 relative">
+          <div className="flex justify-center items-start w-1/2 gap-8">
+            <div
+              key="details"
+              className={`flex justify-between items-center gap-5 flex-col mb-6 w-full`}
+            >
+              <div className="flex justify-between items-center w-full">
+                <div>
+                  <p className="text-gray-900">Details</p>
+                  <span className="text-sm text-gray-400">
+                    Fill in information about your plan
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center flex-col gap-6 w-full">
+                <div className="w-full">
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
+                    Plan Name
+                  </label>
+                  <input
+                    type="text"
+                    className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900 block w-full p-2.5"
+                    placeholder="name e.g. dStream"
+                    value={planDetails.name}
+                    onChange={(e) => {
+                      setPlanDetails({
+                        type: "name",
+                        value: e.target.value,
+                      });
+                    }}
+                    required
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
+                    Plan Description
+                  </label>
+                  <textarea
+                    rows={5}
+                    className="shadow-sm bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-gray-900  block w-full p-2.5"
+                    placeholder="Description e.g. User for calculate number of apis calls"
+                    value={planDetails.description}
+                    onChange={(e) => {
+                      setPlanDetails({
+                        type: "description",
+                        value: e.target.value,
+                      });
+                    }}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

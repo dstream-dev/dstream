@@ -8,6 +8,7 @@ import Metric from "./pages/Metric/Metric";
 import Customer from "./pages/Customer/Customer";
 import CustomerDetails from "./pages/Customer/CustomerDetails";
 import Plan from "./pages/Plan/Plan";
+import PlanDetails from "./pages/Plan/PlanDetails";
 
 const Routing = () => (
   <Routes>
@@ -24,6 +25,7 @@ const Routing = () => (
     </Route>
     <Route path="/plans">
       <Route index element={<Plan />} />
+      <Route path=":id" element={<PlanDetails />} />
     </Route>
     <Route path="/settings" element={<Setting />} />
   </Routes>

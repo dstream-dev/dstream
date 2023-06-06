@@ -27,10 +27,8 @@ export interface IPlan {
   currency: string;
   external_plan_id?: string;
   payment_term: PlanPaymentTerm;
-  min_charges: {
-    amount: number;
-    cadence: string;
-  };
+  min_charges_amount: number;
+  min_charges_name: string;
   created_at: string;
   updated_at: string;
   charges: IPlanCharges[];
@@ -45,7 +43,7 @@ export interface IPlanCharges {
   active_min_charge: boolean;
   min_charge: number;
   pricing_model: PriceModel;
-  pricing_scheme: object;
+  pricing_scheme: any;
 }
 
 export const UnitPriceModel: {
