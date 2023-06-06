@@ -5,17 +5,10 @@ import {
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { ChargesCadence, PlanPaymentTerm, PriceModel } from "src/entities";
-
-class PlanMinChargesDTO {
-  @IsNotEmpty()
-  amount: number;
-
-  @IsNotEmpty()
-  name: string;
-}
 
 export class PlanChargesDTO {
   @IsNotEmpty()
@@ -28,6 +21,7 @@ export class PlanChargesDTO {
   @IsNotEmpty()
   active_min_charge: boolean;
 
+  @ValidateIf((o) => o.active_min_charge === true)
   @IsNotEmpty()
   min_charge: number;
 
@@ -59,7 +53,8 @@ export class PlanDTO {
   @IsOptional()
   min_charges_amount: number;
 
-  @IsOptional()
+  @ValidateIf((o) => o.min_charges_amount > 0)
+  @IsNotEmpty()
   min_charges_name: string;
 
   @ValidateNested({ each: true })
