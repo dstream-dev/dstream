@@ -13,3 +13,8 @@ export class CreateEventDTO {
   @IsNotEmpty()
   properties: object;
 }
+
+export class GetEventsDTO {
+  @IsNotEmpty()
+  page: number;
+}

@@ -21,6 +21,7 @@ export class CustomersService {
     try {
       return await this.customersRepository.find({
         where: { organization_id: org_id },
+        order: { created_at: "DESC" },
       });
     } catch (e) {
       throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);

@@ -8,9 +8,10 @@ import {
   Controller,
   HttpStatus,
   HttpException,
+  Query,
 } from "@nestjs/common";
 import { EventService } from "./event.service";
-import { CreateEventDTO } from "src/dtos";
+import { CreateEventDTO, GetEventsDTO } from "src/dtos";
 import { Roles, RolesGuard, UserAuthGuard } from "src/utils";
 import { UserRole } from "src/entities";
 
@@ -47,9 +48,15 @@ export class EventController {
   @Roles(UserRole.ADMIN, UserRole.MEMBER, UserRole.OWNER)
   @UseGuards(UserAuthGuard, RolesGuard)
   @Get()
-  async getEvents(@Headers("x-organization-id") id: string) {
+  async getEvents(
+    @Headers("x-organization-id") id: string,
+    @Query() query: GetEventsDTO,
+  ) {
     try {
-      return await this.eventService.getEvents(id);
+      return await this.eventService.getEvents({
+        org_id: id,
+        page: query.page,
+      });
     } catch (err) {
       throw new HttpException(
         err.message,

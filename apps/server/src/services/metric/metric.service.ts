@@ -36,6 +36,7 @@ export class MetricService {
       return await this.metricRepository
         .createQueryBuilder()
         .where("organization_id = :organization_id", { organization_id })
+        .orderBy("created_at", "DESC")
         .getMany();
     } catch (err) {
       throw new HttpException(

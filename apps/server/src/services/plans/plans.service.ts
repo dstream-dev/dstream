@@ -21,6 +21,7 @@ export class PlansService {
       return await this.planRepository
         .createQueryBuilder("plan")
         .where("plan.organization_id = :org_id", { org_id: string })
+        .orderBy("plan.created_at", "DESC")
         .getMany();
     } catch (err) {
       throw new HttpException(

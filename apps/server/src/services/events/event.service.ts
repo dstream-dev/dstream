@@ -71,18 +71,18 @@ export class EventService {
     }
   }
 
-  async getEvents(org_id: string) {
+  async getEvents({ org_id, page }: { org_id: string; page: number }) {
     try {
       const events: any = await (
         await clickhouseClient.query({
-          query: `select * from default.events_${org_id}`,
+          query: `select * from default.events_${org_id} ORDER BY created_at DESC LIMIT 100 ${
+            page > 1 ? `OFFSET ${page * 100}` : ""
+          }`,
           format: "JSONEachRow",
         })
       ).json();
 
-      return {
-        events,
-      };
+      return events;
     } catch (err) {
       throw new HttpException(
         err.message,
