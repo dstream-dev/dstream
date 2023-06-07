@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../apis";
-import { IPlan, IPlanCharges } from "../../interfaces";
+import { IPlanCharges } from "../../interfaces";
 import Spinner from "../../components/Spinner";
 import PackagePriceDetails from "./parts/PackagePriceDetails";
 import UnitPriceDetails from "./parts/UnitPriceDetails";

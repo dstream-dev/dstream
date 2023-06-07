@@ -9,6 +9,7 @@ import Customer from "./pages/Customer/Customer";
 import CustomerDetails from "./pages/Customer/CustomerDetails";
 import Plan from "./pages/Plan/Plan";
 import PlanDetails from "./pages/Plan/PlanDetails";
+import Events from "./pages/Events/Events";
 
 const Routing = () => (
   <Routes>
@@ -26,6 +27,9 @@ const Routing = () => (
     <Route path="/plans">
       <Route index element={<Plan />} />
       <Route path=":id" element={<PlanDetails />} />
+    </Route>
+    <Route path="/events">
+      <Route index element={<Events />} />
     </Route>
     <Route path="/settings" element={<Setting />} />
   </Routes>

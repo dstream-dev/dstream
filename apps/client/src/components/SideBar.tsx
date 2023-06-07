@@ -44,11 +44,11 @@ function SideBar() {
       name: "Customers",
       route: "/customers",
     },
-    {
-      id: 5,
-      name: "Invoices",
-      route: "/invoices",
-    },
+    // {
+    //   id: 5,
+    //   name: "Invoices",
+    //   route: "/invoices",
+    // },
     {
       id: 6,
       name: "Events",
