@@ -83,3 +83,32 @@ export async function updateAddress({
     data,
   });
 }
+
+export async function addSubscription({
+  plan_id,
+  customer_id,
+}: {
+  plan_id: string;
+  customer_id: string;
+}) {
+  return Axios({
+    method: "PUT",
+    url: `/customer/${customer_id}/subscription`,
+    data: { plan_id },
+  });
+}
+
+export async function updateSubscriptionStatus({
+  sub_id,
+  status,
+}: {
+  sub_id: string;
+  status: boolean;
+}) {
+  return Axios({
+    method: "PUT",
+    url: `/customer/subscription/${sub_id}/${
+      status ? "activate" : "deactivate"
+    }`,
+  });
+}

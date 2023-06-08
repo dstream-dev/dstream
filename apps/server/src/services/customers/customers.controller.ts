@@ -24,6 +24,7 @@ import {
   UpdateCustomerDTO,
   CustomerAddressDTO,
   CustomerBalanceDTO,
+  CustomerSubscriptionDTO,
 } from "src/dtos";
 import { activityLog } from "src/utils/activityLog";
 
@@ -171,6 +172,97 @@ export class CustomersController {
       return customer;
     } catch (e) {
       throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/:id/subscription")
+  async addSubscription(
+    @Headers("x-organization-id") org_id: string,
+    @Param("id") id: string,
+    @Body() data: CustomerSubscriptionDTO,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      const customer = await this.customersService.addSubscription({
+        id,
+        data,
+        org_id,
+      });
+
+      activityLog({
+        org_id: org_id,
+        by: user.email,
+        activity_id: id,
+        activity_type: "customer",
+        activity: "customer subscription added",
+      });
+
+      return customer;
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/subscription/:sub_id/deactivate")
+  async deactivateSubscription(
+    @Headers("x-organization-id") org_id: string,
+    @Param("sub_id") sub_id: string,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      const customer = await this.customersService.subscriptionStatus({
+        sub_id,
+        org_id,
+        status: false,
+      });
+
+      activityLog({
+        org_id: org_id,
+        by: user.email,
+        activity_id: sub_id,
+        activity_type: "customer",
+        activity: "customer subscription deactivated",
+      });
+
+      return customer;
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
+  @UseGuards(UserAuthGuard, RolesGuard)
+  @Put("/subscription/:sub_id/activate")
+  async activateSubscription(
+    @Headers("x-organization-id") org_id: string,
+    @Param("sub_id") sub_id: string,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      const customer = await this.customersService.subscriptionStatus({
+        sub_id,
+        org_id,
+        status: true,
+      });
+
+      activityLog({
+        org_id: org_id,
+        by: user.email,
+        activity_id: sub_id,
+        activity_type: "customer",
+        activity: "customer subscription activated",
+      });
+
+      return customer;
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

@@ -4,17 +4,23 @@ import {
   CreateCustomerDTO,
   CustomerAddressDTO,
   CustomerBalanceDTO,
+  CustomerSubscriptionDTO,
   UpdateCustomerDTO,
 } from "src/dtos";
-import { Customer } from "src/entities";
+import { Customer, CustomerPlan } from "src/entities";
 import { createID } from "src/utils";
 import { Repository } from "typeorm";
+import { PlansService } from "../plans";
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectRepository(Customer)
     private readonly customersRepository: Repository<Customer>,
+    @InjectRepository(CustomerPlan)
+    private readonly customerPlansRepository: Repository<CustomerPlan>,
+
+    private readonly plansService: PlansService,
   ) {}
 
   async findAll(org_id: string): Promise<Customer[]> {
@@ -36,9 +42,17 @@ export class CustomersService {
     org_id: string;
   }): Promise<Customer> {
     try {
-      return await this.customersRepository.findOne({
-        where: { id, organization_id: org_id },
-      });
+      return await this.customersRepository
+        .createQueryBuilder("customer")
+        .leftJoinAndMapMany(
+          "customer.subscriptions",
+          CustomerPlan,
+          "customer_plans",
+          "customer_plans.customer_id = customer.id",
+        )
+        .where("customer.id = :id", { id })
+        .andWhere("customer.organization_id = :org_id", { org_id })
+        .getOne();
     } catch (e) {
       throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
     }
@@ -134,6 +148,81 @@ export class CustomersService {
       return {
         status: HttpStatus.OK,
         message: "Customer balance updated successfully",
+      };
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async addSubscription({
+    id,
+    org_id,
+    data,
+  }: {
+    id: string;
+    org_id: string;
+    data: CustomerSubscriptionDTO;
+  }) {
+    try {
+      const customer = await this.customersRepository.findOne({
+        where: { id, organization_id: org_id },
+      });
+      if (!customer) {
+        throw new HttpException("Customer not found", HttpStatus.NOT_FOUND);
+      }
+
+      const plan = await this.plansService.findOne({
+        id: data.plan_id,
+        org_id,
+      });
+
+      if (!plan) {
+        throw new HttpException("Plan not found", HttpStatus.NOT_FOUND);
+      }
+
+      await this.customerPlansRepository.save({
+        id: createID("customer_plan"),
+        plan_id: plan.id,
+        plan_name: plan.name,
+        organization_id: org_id,
+        customer_id: customer.id,
+        status: true,
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: "Customer subscription added successfully",
+      };
+    } catch (e) {
+      throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async subscriptionStatus({
+    sub_id,
+    org_id,
+    status,
+  }: {
+    sub_id: string;
+    org_id: string;
+    status: boolean;
+  }) {
+    try {
+      const subscription = await this.customerPlansRepository.findOne({
+        where: { id: sub_id, organization_id: org_id },
+      });
+      if (!subscription) {
+        throw new HttpException("Subscription not found", HttpStatus.NOT_FOUND);
+      }
+
+      await this.customerPlansRepository.update(
+        { id: subscription.id },
+        { status: status },
+      );
+
+      return {
+        status: HttpStatus.OK,
+        message: "Customer subscription deactivated successfully",
       };
     } catch (e) {
       throw new HttpException(e.message, e.status || HttpStatus.BAD_REQUEST);

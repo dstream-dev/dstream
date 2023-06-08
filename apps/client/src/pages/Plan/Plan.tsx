@@ -51,6 +51,9 @@ const Plan = () => {
                   Description
                 </th>
                 <th scope="col" className="px-6 py-3">
+                  Subscription Count
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Created At
                 </th>
               </tr>
@@ -82,6 +85,9 @@ const Plan = () => {
                         </th>
                         <td className="px-6 py-4 truncate max-w-[250px]">
                           {item?.description}
+                        </td>
+                        <td className="px-6 py-4 truncate max-w-[250px]">
+                          {item?.subscriptions.length}
                         </td>
                         <td className="px-6 py-4">
                           {new Intl.DateTimeFormat("en-IN", {

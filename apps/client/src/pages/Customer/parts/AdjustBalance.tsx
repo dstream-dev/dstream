@@ -49,8 +49,11 @@ const AdjustBalance = ({
         queryClient.invalidateQueries(["customer", id]);
         setIsOpen(null);
       },
-      onError: () => {
-        toast.error("Something went wrong");
+      onError: (err: {
+        message: string;
+        response: { data: { message: string } };
+      }) => {
+        toast.error(err?.response?.data?.message || err.message);
       },
     }
   );

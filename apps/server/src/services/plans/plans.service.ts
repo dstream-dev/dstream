@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
-import { Plan, PlanCharges } from "src/entities";
+import { CustomerPlan, Plan, PlanCharges } from "src/entities";
 import { EntityManager, Repository } from "typeorm";
 import { PlanDTO } from "src/dtos";
 import { createID } from "src/utils";
@@ -20,6 +20,12 @@ export class PlansService {
     try {
       return await this.planRepository
         .createQueryBuilder("plan")
+        .leftJoinAndMapMany(
+          "plan.subscriptions",
+          CustomerPlan,
+          "customer_plan",
+          "customer_plan.plan_id = plan.id",
+        )
         .where("plan.organization_id = :org_id", { org_id: string })
         .orderBy("plan.created_at", "DESC")
         .getMany();

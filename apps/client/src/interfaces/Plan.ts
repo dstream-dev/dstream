@@ -31,6 +31,7 @@ export interface IPlan {
   min_charges_name: string;
   created_at: string;
   updated_at: string;
+  subscriptions: any[];
   charges: IPlanCharges[];
 }
 
