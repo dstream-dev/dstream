@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import {
   Customer,
+  CustomerPlan,
   Metric,
   Organization,
   Plan,
@@ -43,6 +44,7 @@ import { BullBoardController } from "./bullBoard.controller";
           Metric,
           Customer,
           PlanCharges,
+          CustomerPlan,
           Organization,
           UserOrganization,
         ],

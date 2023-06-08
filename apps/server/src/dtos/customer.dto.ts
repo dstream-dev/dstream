@@ -57,3 +57,8 @@ export class CustomerBalanceDTO {
   @IsNotEmpty()
   currency: string;
 }
+
+export class CustomerSubscriptionDTO {
+  @IsNotEmpty()
+  plan_id: string;
+}
