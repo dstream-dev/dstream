@@ -18,6 +18,7 @@ export interface IUserOrganization {
   user_id: string;
   organization_id: string;
   role: UserRole;
+  organization: IOrganization;
   created_at: string;
   updated_at: string;
 }

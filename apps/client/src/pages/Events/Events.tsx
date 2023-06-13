@@ -26,10 +26,10 @@ function Events() {
       </div>
       <main className="bg-white">
         <div className="flex flex-col">
-          <div className="relative -my-2 -mx-4 sm:-mx-6 lg:-mx-8">
-            <div className="min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="border min-w-full rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-fixed rounded-md bg-gray-10 w-full">
+          <div className="relative -my-2">
+            <div className="py-2 align-middle">
+              <div className="border rounded-lg">
+                <table className="divide-y divide-gray-300 table-fixed rounded-md bg-gray-10 w-full">
                   <thead className="rounded-t-lg">
                     <tr className="rounded-t-lg">
                       <th
@@ -123,13 +123,13 @@ function Events() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row ml-auto pb-3 pt-3 float-right">
+        <div className="flex flex-row ml-auto pb-3 pt-3 float-right items-center justify-between">
           <button
             type="button"
             onClick={() => {
               if (page > 1) setPage(page - 1);
             }}
-            className="inline-flex items-center border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ml-1 px-2.5 py-2 border-transparent focus:ring-accent-4"
+            className="inline-flex items-center border rounded-md focus:outline-none ml-1 px-2.5 py-2 border-transparent"
           >
             <span className="text-sm text-gray-40">
               <svg
@@ -147,12 +147,13 @@ function Events() {
               </svg>
             </span>
           </button>
+          <span className="text-sm text-gray-950 font-semibold">{page}</span>
           <button
             type="button"
             onClick={() => {
               if (events.data?.data.length > 0) setPage(page + 1);
             }}
-            className="inline-flex items-center border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ml-1 px-2.5 py-2 border-transparent focus:ring-accent-4 hover:bg-gray-10"
+            className="inline-flex items-center border rounded-md focus:outline-none ml-1 px-2.5 py-2 border-transparent"
           >
             <span className="text-sm text-gray-60">
               <svg

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User, UserOrganization } from "src/entities";
+import { Organization, User, UserOrganization } from "src/entities";
 import { createID } from "src/utils";
 import { CreateUserDTO } from "src/dtos";
 
@@ -37,6 +37,12 @@ export class UserService {
           UserOrganization,
           "user_organization",
           "user_organization.user_id = user.id",
+        )
+        .leftJoinAndMapOne(
+          "user_organization.organization",
+          Organization,
+          "organization",
+          "organization.id = user_organization.organization_id",
         )
         .where("user.email = :email", { email })
         .getOne();
