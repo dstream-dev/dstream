@@ -151,6 +151,7 @@ function CustomerDetails() {
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white rounded-b-lg">
                         {(customerDetails.data?.data?.subscriptions || []).map(
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           (subscription: any) => (
                             <tr
                               key={subscription.id}

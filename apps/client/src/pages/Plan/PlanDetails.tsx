@@ -1,5 +1,4 @@
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../apis";
 import { IPlanCharges } from "../../interfaces";

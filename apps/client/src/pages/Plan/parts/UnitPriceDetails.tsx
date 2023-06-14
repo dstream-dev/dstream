@@ -1,5 +1,3 @@
-import React from "react";
-
 function UnitPriceDetails({ price_per_unit }: { price_per_unit: number }) {
   return (
     <div className="mt-6 flex flex-col grow">

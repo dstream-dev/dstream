@@ -1,5 +1,3 @@
-import React from "react";
-
 interface IProps {
   package_size: string;
   package_per_price: string;
